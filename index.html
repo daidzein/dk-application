@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sales Dashboard – Sep–Oct 2026</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.5 system-ui,Segoe UI,Roboto,sans-serif;color:#1f1f1f;background:#f6f7f6}
+main{max-width:1000px;margin:0 auto;padding:16px}
+h1{margin:0 0 4px;font-size:1.5rem;color:#004532}
+h2{margin:0 0 10px;font-size:1.1rem;color:#dc2a2e}
+section{background:#fff;border-radius:12px;padding:16px;margin:14px 0;box-shadow:0 1px 3px #0001}
+.muted{color:#666;font-size:.85rem}
+.err{color:#b00020;font-weight:600}
+textarea{width:100%;height:90px;font:12px monospace;margin-top:8px}
+button{background:#004532;color:#fff;border:0;border-radius:999px;padding:9px 18px;font-weight:700;cursor:pointer}
+button:hover{background:#00603f}
+.drop{border:2px dashed #9bb;border-radius:10px;padding:14px;text-align:center}
+.drop.over{background:#e8f4ee}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.kpi{background:#eef7f1;border-radius:10px;padding:10px}
+.kpi b{display:block;font-size:1.15rem;color:#004532}
+.bar{display:grid;grid-template-columns:110px 1fr 140px;gap:8px;align-items:center;margin:4px 0}
+.bar div{background:#e6e6e6;border-radius:6px;height:14px}
+.bar i{display:block;height:100%;background:#2bac55;border-radius:6px}
+.bar b{text-align:right;font-size:.85rem}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.85rem}
+th{background:#004532;color:#fff;text-align:left;padding:6px 8px;white-space:nowrap}
+td{padding:6px 8px;border-bottom:1px solid #e3e3e3;white-space:nowrap}
+.n{text-align:right}
+.summary{background:#fdf1f1;border-radius:10px;padding:12px;white-space:pre-wrap}
+label{margin-right:14px}
+ul{margin:6px 0 0;padding-left:20px}
+</style>
+</head>
+<body>
+<main>
+<h1>Sales Dashboard</h1>
+<p class="muted">Load <code>sales.csv</code>. Everything runs in your browser; no data is uploaded.</p>
+
+<section>
+  <div class="drop" id="drop">
+    <input type="file" id="file" accept=".csv,text/csv"> <span class="muted">or drag the file here</span>
+  </div>
+  <textarea id="paste" placeholder="...or paste the CSV text here"></textarea>
+  <p><button id="go">Load pasted CSV</button>
+  <label><input type="checkbox" id="dedup" checked> Remove exact duplicate rows</label></p>
+  <p class="err" id="err"></p>
+</section>
+
+<div id="out" hidden>
+  <section><h2>Overview</h2><div class="kpis" id="kpi"></div></section>
+  <section><h2>Net sales by region</h2><div id="regions"></div></section>
+  <section><h2>Region × brand (net sales, IDR)</h2><div class="scroll" id="matrix"></div></section>
+  <section>
+    <h2>5 weakest outlets</h2>
+    <p><label><input type="radio" name="mode" value="total" checked> Lowest total net sales</label>
+    <label><input type="radio" name="mode" value="peer"> Lowest vs. median of same outlet type</label></p>
+    <div class="scroll" id="weak"></div>
+    <p class="muted" id="weakNote"></p>
+  </section>
+  <section>
+    <h2>Summary for Telegram</h2>
+    <div class="summary" id="summary"></div>
+    <p><button id="copy">Copy summary</button> <span class="muted" id="copied"></span></p>
+  </section>
+  <section><h2>Data cleaning notes</h2><ul id="dq"></ul></section>
+</div>
+</main>
+
+<script>
+var RAW=null, RES=null;
+var $=function(id){return document.getElementById(id)};
+var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+var idr=function(n){return 'Rp '+Math.round(n).toLocaleString('id-ID')};
+function short(n){
+  var a=Math.abs(n), s=n<0?'-':'';
+  if(a>=1e9) return s+'Rp '+(a/1e9).toFixed(2).replace('.',',')+' miliar';
+  if(a>=1e6) return s+'Rp '+(a/1e6).toFixed(1).replace('.',',')+' juta';
+  return s+idr(a);
+}
+function pct(a,b){return b?(a/b*100).toFixed(1).replace('.',',')+'%':'0%'}
+function median(a){var s=a.slice().sort(function(x,y){return x-y}),m=Math.floor(s.length/2);return s.length%2?s[m]:(s[m-1]+s[m])/2}
+
+function parseCSV(t){
+  var rows=[],row=[],f='',q=false,i,c;
+  for(i=0;i<t.length;i++){
+    c=t[i];
+    if(q){ if(c==='"'){ if(t[i+1]==='"'){f+='"';i++} else q=false } else f+=c }
+    else if(c==='"') q=true;
+    else if(c===','){row.push(f);f=''}
+    else if(c==='\n'){row.push(f);rows.push(row);row=[];f=''}
+    else if(c!=='\r') f+=c;
+  }
+  if(f.length||row.length){row.push(f);rows.push(row)}
+  return rows.filter(function(r){return r.some(function(x){return x.trim()!==''})});
+}
+
+var ALIAS={'jabar':'Jawa Barat','jateng':'Jawa Tengah','jatim':'Jawa Timur'};
+function normRegion(s){
+  var k=s.trim().replace(/\s+/g,' ').toLowerCase();
+  if(ALIAS[k]) return ALIAS[k];
+  return k.replace(/\b\w/g,function(c){return c.toUpperCase()});
+}
+
+function analyze(){
+  var rows=RAW, head=rows[0].map(function(h){return h.trim().toLowerCase()});
+  var need=['date','invoice_no','region','branch','outlet_id','outlet_name','outlet_type','salesman','brand','qty_carton','net_sales_idr'];
+  var miss=need.filter(function(n){return head.indexOf(n)<0});
+  if(miss.length) throw new Error('Missing columns: '+miss.join(', '));
+  var ix={}; head.forEach(function(h,i){ix[h]=i});
+  var removeDup=$('dedup').checked;
+  var q={rows:rows.length-1,dup:0,dupInv:[],regionFixed:0,blankSales:0,invalid:0,returns:0,spaceFixed:0};
+  var seen={}, recs=[];
+  for(var r=1;r<rows.length;r++){
+    var raw=rows[r].map(function(x){return x==null?'':x});
+    var trimmed=raw.map(function(x){return x.trim()});
+    if(raw.some(function(x,i){return x!==trimmed[i]})) q.spaceFixed++;
+    var key=trimmed.join('|');
+    if(seen[key]){ q.dup++; q.dupInv.push(trimmed[ix.invoice_no]); if(removeDup) continue; }
+    seen[key]=1;
+    var net=Number(trimmed[ix.net_sales_idr]), qty=Number(trimmed[ix.qty_carton]);
+    if(trimmed[ix.net_sales_idr]===''||!isFinite(net)||!trimmed[ix.date]){q.invalid++;continue}
+    var reg=normRegion(trimmed[ix.region]); if(reg!==trimmed[ix.region]) q.regionFixed++;
+    var sm=trimmed[ix.salesman]; if(!sm){sm='Unknown';q.blankSales++}
+    var ret=qty<0||net<0||/^RTR/i.test(trimmed[ix.invoice_no]); if(ret) q.returns++;
+    recs.push({date:trimmed[ix.date],inv:trimmed[ix.invoice_no],region:reg,branch:trimmed[ix.branch],
+      oid:trimmed[ix.outlet_id],oname:trimmed[ix.outlet_name],otype:trimmed[ix.outlet_type],sm:sm,
+      brand:trimmed[ix.brand],net:net,ret:ret});
+  }
+  if(!recs.length) throw new Error('No valid rows found.');
+  var total=0,retVal=0,invs={},byReg={},byBrand={},mat={},out={},names={},start=recs[0].date,end=recs[0].date;
+  recs.forEach(function(x){
+    total+=x.net; if(x.ret) retVal+=x.net; else invs[x.inv]=1;
+    byReg[x.region]=(byReg[x.region]||0)+x.net;
+    byBrand[x.brand]=(byBrand[x.brand]||0)+x.net;
+    (mat[x.region]=mat[x.region]||{})[x.brand]=((mat[x.region]||{})[x.brand]||0)+x.net;
+    var o=out[x.oid]||(out[x.oid]={id:x.oid,name:x.oname,branch:x.branch,region:x.region,type:x.otype,net:0,inv:{}});
+    o.net+=x.net; if(!x.ret) o.inv[x.inv]=1;
+    (names[x.oname]=names[x.oname]||{})[x.oid]=1;
+    if(x.date<start) start=x.date; if(x.date>end) end=x.date;
+  });
+  var outlets=Object.keys(out).map(function(k){var o=out[k];o.nInv=Object.keys(o.inv).length;return o});
+  var byType={};
+  outlets.forEach(function(o){(byType[o.type]=byType[o.type]||[]).push(o.net)});
+  outlets.forEach(function(o){o.rel=o.net/median(byType[o.type])});
+  var sortDesc=function(m){return Object.keys(m).map(function(k){return [k,m[k]]}).sort(function(a,b){return b[1]-a[1]})};
+  var dupNames=Object.keys(names).filter(function(n){return Object.keys(names[n]).length>1});
+  return {q:q,total:total,retVal:retVal,nInv:Object.keys(invs).length,start:start,end:end,
+    regions:sortDesc(byReg),brands:sortDesc(byBrand),mat:mat,outlets:outlets,dupNames:dupNames,removeDup:removeDup};
+}
+
+function weakest(){
+  var mode=document.querySelector('input[name=mode]:checked').value;
+  var key=mode==='peer'?'rel':'net';
+  return RES.outlets.slice().sort(function(a,b){return a[key]-b[key]}).slice(0,5);
+}
+
+function render(){
+  var R=RES;
+  $('kpi').innerHTML=[['Net sales',idr(R.total)],['Invoices',R.nInv.toLocaleString('id-ID')],
+    ['Outlets',R.outlets.length],['Returns',idr(Math.abs(R.retVal))],['Period',R.start+' → '+R.end]]
+    .map(function(k){return '<div class="kpi">'+esc(k[0])+'<b>'+esc(k[1])+'</b></div>'}).join('');
+  var max=R.regions[0][1];
+  $('regions').innerHTML=R.regions.map(function(r){
+    return '<div class="bar"><span>'+esc(r[0])+'</span><div><i style="width:'+(r[1]/max*100)+'%"></i></div><b>'+idr(r[1])+'</b></div>'}).join('');
+  var brands=R.brands.map(function(b){return b[0]}), mmax=1;
+  R.regions.forEach(function(r){brands.forEach(function(b){mmax=Math.max(mmax,(R.mat[r[0]]||{})[b]||0)})});
+  var h='<table><tr><th>Region</th>'+brands.map(function(b){return '<th class="n">'+esc(b)+'</th>'}).join('')+'<th class="n">Total</th></tr>';
+  R.regions.forEach(function(r){
+    h+='<tr><td><b>'+esc(r[0])+'</b></td>'+brands.map(function(b){
+      var v=(R.mat[r[0]]||{})[b]||0;
+      return '<td class="n" style="background:rgba(43,172,85,'+(v/mmax*0.55).toFixed(2)+')">'+Math.round(v).toLocaleString('id-ID')+'</td>'}).join('')+
+      '<td class="n"><b>'+Math.round(r[1]).toLocaleString('id-ID')+'</b></td></tr>';
+  });
+  $('matrix').innerHTML=h+'</table>';
+  renderWeak(); renderDQ();
+}
+
+function renderWeak(){
+  var w=weakest(), mode=document.querySelector('input[name=mode]:checked').value;
+  $('weak').innerHTML='<table><tr><th>#</th><th>Outlet</th><th>ID</th><th>Type</th><th>Branch</th><th class="n">Invoices</th><th class="n">Net sales</th><th class="n">vs type median</th></tr>'+
+    w.map(function(o,i){return '<tr><td>'+(i+1)+'</td><td>'+esc(o.name)+'</td><td>'+esc(o.id)+'</td><td>'+esc(o.type)+'</td><td>'+esc(o.branch)+'</td><td class="n">'+o.nInv+
+      '</td><td class="n">'+Math.round(o.net).toLocaleString('id-ID')+'</td><td class="n">'+(o.rel*100).toFixed(0)+'%</td></tr>'}).join('')+'</table>';
+  $('weakNote').textContent=mode==='peer'
+    ? 'Ranked by net sales divided by the median of outlets of the same type (fairer to small shop formats).'
+    : 'Ranked by total net sales over the period. Outlets are grouped by outlet_id, not by name.';
+  $('summary').textContent=summary(w,mode);
+  $('copied').textContent='';
+}
+
+function summary(w,mode){
+  var R=RES;
+  var d=function(s){return new Date(s+'T00:00:00').toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})};
+  var r1=R.regions[0], rl=R.regions[R.regions.length-1], b1=R.brands[0], b2=R.brands[1];
+  var wk=w.map(function(o,i){return (i+1)+') '+o.name+' ('+o.branch+') '+short(o.net)}).join('; ');
+  var avg=(w.reduce(function(a,o){return a+o.nInv},0)/w.length).toFixed(1).replace('.',',');
+  return 'Ringkasan penjualan '+d(R.start)+' – '+d(R.end)+': penjualan bersih '+short(R.total)+' dari '+R.nInv+' invoice'+
+    (R.retVal<0?' (sudah dikurangi retur '+short(-R.retVal)+')':'')+
+    '. Region terbesar '+r1[0]+' ('+pct(r1[1],R.total)+'), terkecil '+rl[0]+' ('+pct(rl[1],R.total)+'). '+
+    'Brand terlaris '+b1[0]+' ('+pct(b1[1],R.total)+')'+(b2?', disusul '+b2[0]+' ('+pct(b2[1],R.total)+')':'')+'. '+
+    '5 outlet terlemah'+(mode==='peer'?' dibanding outlet sejenis':'')+': '+wk+'. '+
+    'Rata-rata hanya '+avg+' invoice per outlet di periode ini, jadi perlu dicek apakah perlu kunjungan atau reaktivasi.';
+}
+
+function renderDQ(){
+  var q=RES.q, L=[];
+  L.push(q.rows+' rows read.');
+  L.push(q.dup+' exact duplicate row(s) '+(RES.removeDup?'removed':'kept (checkbox off)')+(q.dup?' – invoices: '+q.dupInv.join(', '):'')+'. Review these: a repeated line can also be a legitimate second order line.');
+  L.push(q.regionFixed+' row(s) had region spelling/case normalized (e.g. Jabar, JAWA BARAT).');
+  L.push(q.spaceFixed+' row(s) had stray spaces trimmed (e.g. outlet names).');
+  L.push(q.blankSales+' row(s) with blank salesman labelled "Unknown" (kept in totals).');
+  L.push(q.returns+' return row(s) kept so net sales are correct, but not counted as invoices.');
+  if(q.invalid) L.push(q.invalid+' row(s) skipped (missing date or invalid net sales).');
+  if(RES.dupNames.length) L.push(RES.dupNames.length+' outlet name(s) are shared by different outlet_ids (e.g. "'+RES.dupNames[0]+'"), so outlets are grouped by outlet_id.');
+  $('dq').innerHTML=L.map(function(x){return '<li>'+esc(x)+'</li>'}).join('');
+}
+
+function run(){
+  try{ $('err').textContent=''; RES=analyze(); render(); $('out').hidden=false; }
+  catch(e){ $('err').textContent=e.message; $('out').hidden=true; }
+}
+function load(text){
+  var rows=parseCSV(text.replace(/^\uFEFF/,''));
+  if(rows.length<2){ $('err').textContent='Empty file or not a CSV.'; return }
+  RAW=rows; run();
+}
+
+$('file').addEventListener('change',function(e){var f=e.target.files[0]; if(f) f.text().then(load)});
+$('go').addEventListener('click',function(){load($('paste').value)});
+$('dedup').addEventListener('change',function(){if(RAW) run()});
+document.querySelectorAll('input[name=mode]').forEach(function(r){r.addEventListener('change',function(){if(RES) renderWeak()})});
+var drop=$('drop');
+['dragover','dragenter'].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.add('over')})});
+['dragleave','drop'].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.remove('over')})});
+drop.addEventListener('drop',function(e){var f=e.dataTransfer.files[0]; if(f) f.text().then(load)});
+$('copy').addEventListener('click',function(){
+  var t=$('summary').textContent;
+  var done=function(){$('copied').textContent='Copied.'};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,fallback)} else fallback();
+  function fallback(){var a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');done()}catch(e){}document.body.removeChild(a)}
+});
+</script>
+</body>
+</html>
