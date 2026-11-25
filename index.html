@@ -4,43 +4,78 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sales Performance — Dual POV Ledger</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-          },
-          colors: {
-            canvas: '#F9FAFB',
-            ink: '#0F172A',
-            muted: '#64748B',
-            line: '#E2E8F0',
-            accent: {
-              DEFAULT: '#0F766E',
-              hover: '#115E59',
-              soft: '#F0FDFA',
-              border: '#99F6E4'
-            }
-          }
-        }
-      }
-    };
-  </script>
   <style>
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background-color: #F9FAFB;
-      color: #0F172A;
+    :root {
+      --canvas: #F9FAFB;
+      --surface: #FFFFFF;
+      --surface-alt: #F8FAFC;
+      --surface-subtle: #F1F5F9;
+      --ink: #0F172A;
+      --ink-secondary: #334155;
+      --muted: #64748B;
+      --faint: #94A3B8;
+      --line: #E2E8F0;
+      --line-light: #F1F5F9;
+      --teal: #0F766E;
+      --teal-hover: #115E59;
+      --teal-soft: #F0FDFA;
+      --teal-border: #99F6E4;
+      --emerald-bg: #ECFDF5;
+      --emerald-ink: #047857;
+      --emerald-border: #A7F3D0;
+      --amber-bg: #FFFBEB;
+      --amber-ink: #B45309;
+      --amber-border: #FDE68A;
+      --red-bg: #FEF2F2;
+      --red-ink: #B91C1C;
+      --red-border: #FECACA;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--canvas);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::selection {
+      background: #CCFBF1;
+      color: #042F2E;
+    }
+
     .tabular {
       font-variant-numeric: tabular-nums;
     }
-    /* Subtle precision scrollbars */
+
+    button, input, select, textarea {
+      font: inherit;
+      color: inherit;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--teal);
+      outline-offset: 2px;
+    }
+
     ::-webkit-scrollbar {
       width: 5px;
       height: 5px;
@@ -52,787 +87,2268 @@
       background: #CBD5E1;
       border-radius: 3px;
     }
+
+    /* Sticky Top Utility Header */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar-inner {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 10px 24px;
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      flex-wrap: wrap;
+    }
+
+    .logo-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: var(--teal);
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: -0.02em;
+      flex-shrink: 0;
+    }
+
+    .app-title {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+    }
+
+    .slash-sep {
+      color: #CBD5E1;
+    }
+
+    .scope-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 520px;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pov-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .micro-label {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--faint);
+    }
+
+    .segmented {
+      display: inline-flex;
+      padding: 2px;
+      border-radius: 8px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--line);
+    }
+
+    .seg-btn {
+      border: 1px solid transparent;
+      background: transparent;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #475569;
+      cursor: pointer;
+      transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .seg-btn:hover {
+      color: var(--ink);
+    }
+
+    .seg-btn.active {
+      background: var(--surface);
+      color: var(--ink);
+      border-color: rgba(226, 232, 240, 0.9);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+
+    .seg-btn.active-danger {
+      background: var(--surface);
+      color: var(--red-ink);
+      border-color: rgba(226, 232, 240, 0.9);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+
+    .util-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      height: 32px;
+      padding: 0 12px;
+      border-radius: 6px;
+      border: 1px solid var(--teal);
+      background: var(--teal);
+      color: #FFFFFF;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .btn:hover {
+      background: var(--teal-hover);
+      border-color: var(--teal-hover);
+    }
+
+    .btn.secondary {
+      background: var(--surface);
+      border-color: var(--line);
+      color: var(--ink-secondary);
+    }
+
+    .btn.secondary:hover {
+      background: var(--surface-alt);
+      border-color: #CBD5E1;
+      color: var(--ink);
+    }
+
+    .btn.subtle {
+      background: var(--surface-alt);
+      border-color: var(--line);
+      color: var(--ink-secondary);
+    }
+
+    .btn.subtle:hover {
+      background: var(--surface-subtle);
+    }
+
+    .link-btn {
+      background: none;
+      border: 0;
+      padding: 0;
+      color: var(--teal);
+      font-weight: 600;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+    }
+
+    .link-btn:hover {
+      color: var(--teal-hover);
+    }
+
+    /* Main Workspace Container */
+    .workspace {
+      flex: 1;
+      max-width: 1360px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px 24px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .card-pad {
+      padding: 20px;
+    }
+
+    .err-msg {
+      color: var(--red-ink);
+      font-size: 12px;
+      font-weight: 600;
+      margin: 8px 0 0;
+      min-height: 18px;
+    }
+
+    /* CSV Loader & Mapper Views */
+    .loader-shell {
+      max-width: 680px;
+      margin: 28px auto;
+      width: 100%;
+    }
+
+    .dropzone {
+      border: 1.5px dashed #CBD5E1;
+      border-radius: 8px;
+      background: var(--surface-alt);
+      padding: 36px 28px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .dropzone:hover, .dropzone.over {
+      border-color: var(--teal);
+      background: var(--teal-soft);
+    }
+
+    .drop-heading {
+      margin: 0 0 6px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .drop-sub {
+      margin: 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .loader-footer {
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .paste-details {
+      margin-top: 16px;
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+    }
+
+    .paste-details summary {
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .paste-details textarea {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--surface);
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    .map-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 14px 20px;
+      margin: 16px 0;
+    }
+
+    .map-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .map-field span {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+    }
+
+    /* Unified Control & Filter Strip */
+    .filter-strip {
+      padding: 12px 16px;
+    }
+
+    .filter-strip-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .territory-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .area-pill {
+      border: 0;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      background: transparent;
+      color: #475569;
+      cursor: pointer;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .area-pill:hover {
+      background: var(--surface-subtle);
+      color: var(--ink);
+    }
+
+    .area-pill.active {
+      background: var(--teal);
+      color: #FFFFFF;
+    }
+
+    .dropdown-cluster {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-left: auto;
+    }
+
+    .ctrl-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .ctrl-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--faint);
+    }
+
+    .ctrl-select, .ctrl-input {
+      height: 32px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      padding: 0 10px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ink);
+      min-width: 145px;
+    }
+
+    .ctrl-select:focus, .ctrl-input:focus {
+      border-color: var(--teal);
+      outline: none;
+    }
+
+    .active-chips {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line-light);
+    }
+
+    .filter-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--teal-soft);
+      border: 1px solid var(--teal-border);
+      color: var(--teal);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .filter-tag:hover {
+      background: #CCFBF1;
+    }
+
+    /* 4-Metric Hairline-Separated KPI Strip */
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      overflow: hidden;
+    }
+
+    .kpi-cell {
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 1px solid var(--line);
+    }
+
+    .kpi-cell:last-child {
+      border-right: 0;
+    }
+
+    .kpi-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .kpi-title {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .badge.emerald {
+      background: var(--emerald-bg);
+      color: var(--emerald-ink);
+      border-color: var(--emerald-border);
+    }
+
+    .badge.amber {
+      background: var(--amber-bg);
+      color: var(--amber-ink);
+      border-color: var(--amber-border);
+    }
+
+    .badge.red {
+      background: var(--red-bg);
+      color: var(--red-ink);
+      border-color: var(--red-border);
+    }
+
+    .badge.teal {
+      background: var(--teal-soft);
+      color: var(--teal);
+      border-color: var(--teal-border);
+    }
+
+    .badge.neutral {
+      background: var(--surface-subtle);
+      color: var(--muted);
+      border-color: var(--line);
+    }
+
+    .kpi-bottom {
+      margin-top: 10px;
+    }
+
+    .kpi-value {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .kpi-value.entity {
+      font-size: 18px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .kpi-sub {
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .kpi-sub strong {
+      font-weight: 500;
+      color: var(--ink-secondary);
+    }
+
+    .progress-track {
+      margin-top: 8px;
+      width: 100%;
+      height: 6px;
+      background: var(--surface-subtle);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--teal);
+      transition: width 0.25s ease;
+    }
+
+    /* Main 2-Zone Analytical Workspace (7 cols left / 5 cols right) */
+    .analytical-grid {
+      display: grid;
+      grid-template-columns: 7fr 5fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .left-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .card-sub {
+      margin: 2px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .legend-inline {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 12px;
+      color: #475569;
+    }
+
+    .swatch-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    /* Daily Strip Brush */
+    #strip {
+      display: block;
+      width: 100%;
+      height: auto;
+      touch-action: none;
+      user-select: none;
+      cursor: col-resize;
+    }
+
+    #strip .in { fill: var(--teal); }
+    #strip .out { fill: #CBD5E1; }
+    #strip .base { stroke: #CBD5E1; stroke-width: 1; }
+    #strip .mline { stroke: #E2E8F0; stroke-width: 1; stroke-dasharray: 2 3; }
+    #strip .edge { stroke: var(--ink); stroke-width: 1.5; }
+
+    .strip-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--line-light);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .date-inputs {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .date-inputs label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .date-inputs input[type="date"] {
+      height: 28px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      padding: 0 8px;
+      font-size: 11px;
+      background: var(--surface);
+      color: var(--ink);
+    }
+
+    /* Donut + Tabular Legend */
+    .donut-grid {
+      display: grid;
+      grid-template-columns: 168px minmax(0, 1fr);
+      gap: 20px;
+      align-items: center;
+    }
+
+    .donut-wrap {
+      width: 160px;
+      height: 160px;
+      margin: 0 auto;
+    }
+
+    .donut-table {
+      border-top: 1px solid var(--line-light);
+      border-bottom: 1px solid var(--line-light);
+    }
+
+    .donut-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 6px;
+      border-bottom: 1px solid var(--line-light);
+      font-size: 12px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background-color 0.12s ease, opacity 0.15s ease;
+    }
+
+    .donut-row:last-child {
+      border-bottom: 0;
+    }
+
+    .donut-row:hover {
+      background: var(--surface-alt);
+    }
+
+    .donut-row.active {
+      background: var(--teal-soft);
+    }
+
+    .donut-row.static {
+      cursor: default;
+    }
+
+    .donut-row-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .donut-name {
+      font-weight: 500;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .donut-row-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    /* Operational Rankings Panel (Right Zone) */
+    .ranking-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .ranking-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .cat-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-bottom: 1px solid var(--line);
+      margin-top: 4px;
+    }
+
+    .cat-tab {
+      border: 0;
+      border-bottom: 2px solid transparent;
+      background: transparent;
+      padding: 10px 4px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .cat-tab:hover {
+      color: var(--ink);
+    }
+
+    .cat-tab.active {
+      border-bottom-color: var(--teal);
+      color: var(--teal);
+      font-weight: 600;
+    }
+
+    .rank-subbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 0 4px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .mini-pills {
+      display: inline-flex;
+      gap: 4px;
+    }
+
+    .mini-pill {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      border-radius: 4px;
+      padding: 2px 7px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .mini-pill.active {
+      background: var(--teal-soft);
+      border-color: var(--teal-border);
+      color: var(--teal);
+      font-weight: 600;
+    }
+
+    .rank-list {
+      margin-top: 4px;
+    }
+
+    .rank-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 4px;
+      border-bottom: 1px solid var(--line-light);
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background-color 0.12s ease;
+    }
+
+    .rank-item:last-child {
+      border-bottom: 0;
+    }
+
+    .rank-item:hover {
+      background: var(--surface-alt);
+    }
+
+    .rank-left {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .rank-num {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--faint);
+      width: 16px;
+      padding-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .rank-info {
+      min-width: 0;
+    }
+
+    .rank-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .rank-meta {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .rank-right {
+      width: 116px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .rank-metrics {
+      display: flex;
+      align-items: baseline;
+      justify-content: flex-end;
+      gap: 6px;
+    }
+
+    .rank-val {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .rank-pct {
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .rank-footer {
+      margin-top: 14px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--faint);
+    }
+
+    /* Tables (Matrix & Outlet Performance Ledger) */
+    .table-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .table-tools {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      position: relative;
+    }
+
+    .search-box svg {
+      position: absolute;
+      left: 9px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 14px;
+      height: 14px;
+      color: var(--faint);
+      pointer-events: none;
+    }
+
+    .search-input {
+      height: 32px;
+      width: 230px;
+      padding: 0 10px 0 30px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      font-size: 12px;
+      background: var(--surface);
+      color: var(--ink);
+    }
+
+    .search-input::placeholder {
+      color: var(--faint);
+    }
+
+    .search-input:focus {
+      border-color: var(--teal);
+      outline: none;
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+    }
+
+    table.ledger-tbl {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    table.ledger-tbl thead tr {
+      background: var(--surface-alt);
+      border-bottom: 1px solid var(--line);
+    }
+
+    table.ledger-tbl th {
+      padding: 10px 16px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    table.ledger-tbl th:hover {
+      color: var(--ink);
+    }
+
+    table.ledger-tbl th.num,
+    table.ledger-tbl td.num {
+      text-align: right;
+    }
+
+    table.ledger-tbl tbody tr {
+      border-bottom: 1px solid var(--line-light);
+      transition: background-color 0.1s ease;
+    }
+
+    table.ledger-tbl tbody tr:last-child {
+      border-bottom: 0;
+    }
+
+    table.ledger-tbl tbody tr:hover {
+      background: rgba(248, 250, 252, 0.9);
+    }
+
+    table.ledger-tbl td {
+      padding: 10px 16px;
+      font-size: 12px;
+      vertical-align: middle;
+    }
+
+    .cell-main {
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .cell-sub {
+      font-size: 11px;
+      color: var(--faint);
+      margin-top: 1px;
+    }
+
+    .attain-cell {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 150px;
+    }
+
+    .attain-bar {
+      flex: 1;
+      height: 6px;
+      background: var(--surface-subtle);
+      border-radius: 999px;
+      overflow: hidden;
+      min-width: 64px;
+    }
+
+    .attain-bar > div {
+      height: 100%;
+      border-radius: 999px;
+    }
+
+    .table-footer {
+      padding: 12px 20px;
+      border-top: 1px solid var(--line);
+      background: var(--surface-alt);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Matrix Table */
+    table.matrix-tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    table.matrix-tbl th,
+    table.matrix-tbl td {
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--line-light);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    table.matrix-tbl th {
+      background: var(--surface-alt);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      border-bottom: 1px solid var(--line);
+    }
+
+    table.matrix-tbl th:first-child,
+    table.matrix-tbl td:first-child {
+      text-align: left;
+    }
+
+    table.matrix-tbl tbody td {
+      background-color: rgba(15, 118, 110, var(--cell-alpha, 0));
+    }
+
+    table.matrix-tbl tfoot td,
+    table.matrix-tbl tfoot th {
+      background: var(--surface-alt);
+      border-top: 1px solid var(--line);
+      font-weight: 600;
+    }
+
+    .matrix-link {
+      background: none;
+      border: 0;
+      padding: 0;
+      font-weight: 600;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .matrix-link:hover,
+    .matrix-link.active {
+      color: var(--teal);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    /* Bottom Utility Strip: Telegram Summary & Data Audit */
+    .utility-grid {
+      display: grid;
+      grid-template-columns: 7fr 5fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .summary-box {
+      background: var(--surface-alt);
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--teal);
+      border-radius: 6px;
+      padding: 12px 14px;
+      font-size: 12.5px;
+      line-height: 1.55;
+      color: var(--ink-secondary);
+      white-space: pre-wrap;
+      margin: 0 0 12px;
+    }
+
+    .audit-list {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .audit-list li {
+      margin-bottom: 5px;
+    }
+
+    .chk-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ink-secondary);
+      cursor: pointer;
+    }
+
+    .empty-state {
+      padding: 36px 20px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 1024px) {
+      .kpi-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .kpi-cell:nth-child(2) {
+        border-right: 0;
+      }
+      .kpi-cell:nth-child(1),
+      .kpi-cell:nth-child(2) {
+        border-bottom: 1px solid var(--line);
+      }
+      .analytical-grid,
+      .utility-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar-inner, .workspace {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+      .kpi-strip {
+        grid-template-columns: 1fr;
+      }
+      .kpi-cell {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .kpi-cell:last-child {
+        border-bottom: 0;
+      }
+      .donut-grid {
+        grid-template-columns: 1fr;
+      }
+      .dropdown-cluster {
+        margin-left: 0;
+        width: 100%;
+      }
+      .ctrl-group {
+        flex: 1 1 140px;
+      }
+      .ctrl-select {
+        width: 100%;
+      }
+      .search-input {
+        width: 100%;
+      }
+    }
   </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-teal-100 selection:text-teal-950">
+<body>
 
-  <!-- Top Utility Header -->
-  <header class="sticky top-0 z-30 bg-white border-b border-slate-200">
-    <div class="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 h-auto sm:h-14 py-2.5 sm:py-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
-      <!-- Left: Title & Scope Metadata -->
-      <div class="flex items-center gap-3 min-w-0">
-        <div class="w-7 h-7 rounded-md bg-teal-700 text-white flex items-center justify-center font-bold text-xs tracking-tight shrink-0">
-          SP
-        </div>
-        <div class="flex items-center gap-2.5 min-w-0 flex-wrap">
-          <h1 class="text-sm font-semibold text-slate-900 tracking-tight">Sales Performance</h1>
-          <span class="text-slate-300 hidden sm:inline">/</span>
-          <span id="headerScopeLabel" class="text-xs font-medium text-slate-500 truncate">
-            National Helicopter View · All Regions
-          </span>
-        </div>
+  <!-- Sticky Top Utility Header -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand-cluster">
+        <div class="logo-badge">SL</div>
+        <h1 class="app-title" id="headerTitle">Sales Performance</h1>
+        <span class="slash-sep">/</span>
+        <span class="scope-label" id="headerScopeLabel">Load a CSV ledger to begin · Client-side only</span>
       </div>
 
-      <!-- Right: Perspective Segmented Control -->
-      <div class="flex items-center gap-2 self-start sm:self-auto">
-        <span class="text-[11px] font-medium uppercase tracking-wider text-slate-400 hidden md:inline">Perspective</span>
-        <div class="inline-flex p-0.5 rounded-lg bg-slate-100 border border-slate-200" role="tablist" aria-label="Role Perspective">
-          <button
-            id="btnRoleDirector"
-            type="button"
-            onclick="switchRole('director')"
-            class="px-3 py-1.5 rounded-md text-xs font-medium transition-colors bg-white text-slate-900 border border-slate-200/80"
-          >
-            Head Sales / Director
-          </button>
-          <button
-            id="btnRoleManager"
-            type="button"
-            onclick="switchRole('manager')"
-            class="px-3 py-1.5 rounded-md text-xs font-medium transition-colors text-slate-600 hover:text-slate-900"
-          >
-            Sales Manager
-          </button>
+      <div class="header-controls" id="headerControls" hidden>
+        <div class="pov-wrap">
+          <span class="micro-label">Perspective</span>
+          <div class="segmented" role="tablist" aria-label="Role Perspective">
+            <button type="button" id="btnRoleDirector" class="seg-btn active" data-pov="director" aria-pressed="true">
+              Head Sales / Director
+            </button>
+            <button type="button" id="btnRoleManager" class="seg-btn" data-pov="manager" aria-pressed="false">
+              Sales Manager
+            </button>
+          </div>
+        </div>
+
+        <div class="util-actions">
+          <button type="button" class="btn secondary" id="btnCols">Columns</button>
+          <button type="button" class="btn secondary" id="btnNew">Load CSV</button>
         </div>
       </div>
     </div>
   </header>
 
+  <!-- CSV Loader View -->
+  <main class="workspace" id="loaderView">
+    <div class="loader-shell card card-pad">
+      <div class="dropzone" id="drop" tabindex="0" role="button" aria-label="Choose a CSV file">
+        <p class="drop-heading">Drop a sales CSV ledger here</p>
+        <p class="drop-sub">
+          or <button type="button" class="link-btn" id="btnPick">browse for a file</button>.
+          All parsing and analytics run locally in your browser.
+        </p>
+        <input type="file" id="file" accept=".csv,.txt,text/csv" hidden />
+      </div>
+
+      <div class="loader-footer">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <button type="button" class="btn subtle" id="btnSample">Load sample FMCG ledger</button>
+          <span id="lastWrap" hidden>
+            <button type="button" class="btn secondary" id="btnLast"></button>
+          </span>
+        </div>
+        <span style="font-size:11px;color:var(--faint);">Supports comma, semicolon &amp; tab delimiters</span>
+      </div>
+
+      <details class="paste-details">
+        <summary>Paste raw CSV text instead</summary>
+        <textarea id="paste" rows="6" placeholder="date,invoice_no,region,branch,outlet_id,outlet_name,outlet_type,salesman,brand,net_sales_idr" aria-label="CSV text"></textarea>
+        <button type="button" class="btn" id="btnPaste">Read pasted text</button>
+      </details>
+
+      <p class="err-msg" id="err" role="alert"></p>
+    </div>
+  </main>
+
+  <!-- Column Mapper View -->
+  <main class="workspace" id="mapperView" hidden>
+    <div class="card card-pad" style="max-width:860px;margin:16px auto;width:100%;">
+      <h2 class="card-title" style="font-size:16px;">Map CSV Columns</h2>
+      <p class="card-sub" id="mapHelp"></p>
+      <div class="map-grid" id="mapRows"></div>
+      <p class="err-msg" id="mapErr" role="alert"></p>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button type="button" class="btn" id="btnApplyMap">Apply column mapping</button>
+        <button type="button" class="btn secondary" id="btnCancelMap" hidden>Cancel</button>
+      </div>
+    </div>
+  </main>
+
   <!-- Main Analytical Workspace -->
-  <main class="flex-1 max-w-[1360px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 space-y-5">
+  <main class="workspace" id="appView" hidden>
 
     <!-- Unified Control & Filter Strip -->
-    <section aria-label="Filters" class="bg-white border border-slate-200 rounded-lg px-4 py-3">
-      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
-        <!-- Quick Area Pills (Visible in Sales Manager Mode for single-tap territory focus) -->
-        <div id="managerAreaBar" class="hidden flex-wrap items-center gap-1.5 pb-2.5 lg:pb-0 border-b lg:border-b-0 border-slate-100">
-          <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mr-1">Territory:</span>
-          <button type="button" onclick="selectTerritory('Jakarta')" data-area="Jakarta" class="area-pill px-2.5 py-1 rounded-md text-xs font-medium bg-teal-700 text-white">Jakarta</button>
-          <button type="button" onclick="selectTerritory('Bandung')" data-area="Bandung" class="area-pill px-2.5 py-1 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-100">Bandung</button>
-          <button type="button" onclick="selectTerritory('Surabaya')" data-area="Surabaya" class="area-pill px-2.5 py-1 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-100">Surabaya</button>
-          <button type="button" onclick="selectTerritory('Yogyakarta')" data-area="Yogyakarta" class="area-pill px-2.5 py-1 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-100">Yogyakarta</button>
-          <button type="button" onclick="selectTerritory('Medan')" data-area="Medan" class="area-pill px-2.5 py-1 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-100">Medan</button>
+    <section aria-label="Filters" class="card filter-strip">
+      <div class="filter-strip-inner">
+        <!-- Quick Territory Pills (Visible in Sales Manager Mode) -->
+        <div id="managerAreaBar" class="territory-bar" hidden>
+          <span class="micro-label" style="margin-right:4px;">Territory:</span>
+          <div id="territoryPills" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
         </div>
 
         <!-- Dropdown Controls -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 lg:flex lg:items-center gap-2.5 flex-1 lg:justify-end">
-          <!-- Region / Area -->
-          <div class="flex flex-col">
-            <label for="filterRegion" class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Region</label>
-            <select id="filterRegion" onchange="onFilterChange()" class="h-8 rounded-md border border-slate-200 bg-white px-2.5 text-xs font-medium text-slate-800 focus:border-teal-700 focus:outline-none">
-              <option value="ALL">All Regions (National)</option>
-              <option value="Jakarta">Jakarta</option>
-              <option value="Bandung">Bandung</option>
-              <option value="Surabaya">Surabaya</option>
-              <option value="Yogyakarta">Yogyakarta</option>
-              <option value="Medan">Medan</option>
-            </select>
+        <div class="dropdown-cluster">
+          <div class="ctrl-group" id="wrapRegion">
+            <label for="filterRegion" class="ctrl-label">Region</label>
+            <select id="filterRegion" class="ctrl-select"></select>
           </div>
 
-          <!-- Brand -->
-          <div class="flex flex-col">
-            <label for="filterBrand" class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Brand</label>
-            <select id="filterBrand" onchange="onFilterChange()" class="h-8 rounded-md border border-slate-200 bg-white px-2.5 text-xs font-medium text-slate-800 focus:border-teal-700 focus:outline-none">
-              <option value="ALL">All Brands</option>
-              <option value="Nusantara Roast">Nusantara Roast</option>
-              <option value="Kopi Prima">Kopi Prima</option>
-              <option value="Sari Teh">Sari Teh</option>
-              <option value="Botani Drink">Botani Drink</option>
-            </select>
+          <div class="ctrl-group" id="wrapBrand">
+            <label for="filterBrand" class="ctrl-label">Brand</label>
+            <select id="filterBrand" class="ctrl-select"></select>
           </div>
 
-          <!-- Individual Salesperson -->
-          <div class="flex flex-col">
-            <label for="filterSalesperson" class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Salesperson</label>
-            <select id="filterSalesperson" onchange="onFilterChange()" class="h-8 rounded-md border border-slate-200 bg-white px-2.5 text-xs font-medium text-slate-800 focus:border-teal-700 focus:outline-none">
-              <option value="ALL">All Salespeople</option>
-            </select>
+          <div class="ctrl-group" id="wrapSm">
+            <label for="filterSalesperson" class="ctrl-label">Salesperson</label>
+            <select id="filterSalesperson" class="ctrl-select"></select>
           </div>
 
-          <!-- Period -->
-          <div class="flex flex-col">
-            <label for="filterPeriod" class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Period</label>
-            <select id="filterPeriod" onchange="onFilterChange()" class="h-8 rounded-md border border-slate-200 bg-white px-2.5 text-xs font-medium text-slate-800 focus:border-teal-700 focus:outline-none">
-              <option value="MTD">MTD (Nov 2026)</option>
-              <option value="Q4">Q4 2026</option>
-              <option value="YTD">YTD 2026</option>
-            </select>
+          <div class="ctrl-group" id="wrapType">
+            <label for="filterType" class="ctrl-label">Outlet Type</label>
+            <select id="filterType" class="ctrl-select"></select>
           </div>
 
-          <!-- Reset Action -->
-          <div class="col-span-2 sm:col-span-4 lg:col-span-1 flex items-end">
-            <button
-              id="btnResetFilters"
-              type="button"
-              onclick="resetFilters()"
-              class="hidden h-8 px-2.5 rounded-md border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-medium text-slate-700 transition-colors"
-            >
-              Reset
-            </button>
+          <div class="ctrl-group">
+            <label for="filterMonth" class="ctrl-label">Period</label>
+            <select id="filterMonth" class="ctrl-select"></select>
           </div>
+
+          <button type="button" id="btnResetFilters" class="btn subtle" hidden>Reset</button>
         </div>
       </div>
+
+      <div id="activeChips" class="active-chips" hidden></div>
     </section>
 
     <!-- 4-Metric Hairline-Separated KPI Strip -->
-    <section aria-label="Key Performance Metrics" class="bg-white border border-slate-200 rounded-lg grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-200">
-      <!-- Metric 1: Total Revenue vs Quota -->
-      <div class="p-4 sm:p-5 flex flex-col justify-between">
-        <div class="flex items-center justify-between gap-2">
-          <span class="text-xs font-medium text-slate-500">Actual Revenue</span>
-          <span id="kpiRevDelta" class="tabular text-[11px] font-semibold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700">+6.4% vs prior</span>
+    <section aria-label="Key Performance Metrics" class="card kpi-strip">
+      <!-- Metric 1: Net Sales -->
+      <div class="kpi-cell">
+        <div class="kpi-top">
+          <span class="kpi-title">Actual Net Sales</span>
+          <span id="kpiRevDelta" class="badge neutral tabular">Full range</span>
         </div>
-        <div class="mt-2">
-          <div id="kpiRevenue" class="tabular text-2xl font-semibold text-slate-900 tracking-tight">Rp 0</div>
-          <div class="tabular text-xs text-slate-500 mt-1">
-            Target Quota: <span id="kpiQuota" class="font-medium text-slate-700">Rp 0</span>
+        <div class="kpi-bottom">
+          <div id="kpiRevenue" class="kpi-value tabular">Rp 0</div>
+          <div class="kpi-sub tabular" id="kpiRevSub">
+            Returns netted out: <strong>Rp 0</strong>
           </div>
         </div>
       </div>
 
-      <!-- Metric 2: Quota Attainment -->
-      <div class="p-4 sm:p-5 flex flex-col justify-between">
-        <div class="flex items-center justify-between gap-2">
-          <span class="text-xs font-medium text-slate-500">Quota Attainment</span>
-          <span id="kpiAttainStatus" class="text-[11px] font-semibold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700">On Track</span>
+      <!-- Metric 2: Invoices & Avg Ticket -->
+      <div class="kpi-cell">
+        <div class="kpi-top">
+          <span class="kpi-title" id="kpiInvTitle">Invoices &amp; Velocity</span>
+          <span id="kpiAvgInvBadge" class="badge teal tabular">Avg Rp 0</span>
         </div>
-        <div class="mt-2">
-          <div id="kpiAttainment" class="tabular text-2xl font-semibold text-slate-900 tracking-tight">0.0%</div>
-          <div class="mt-2 w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-            <div id="kpiAttainBar" class="bg-teal-700 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+        <div class="kpi-bottom">
+          <div id="kpiInvoices" class="kpi-value tabular">0</div>
+          <div class="kpi-sub tabular" id="kpiInvSub">
+            Daily run-rate: <strong>Rp 0/day</strong>
           </div>
         </div>
       </div>
 
-      <!-- Metric 3: Active Outlets & Velocity -->
-      <div class="p-4 sm:p-5 flex flex-col justify-between">
-        <div class="flex items-center justify-between gap-2">
-          <span class="text-xs font-medium text-slate-500">Active Outlets</span>
-          <span id="kpiOutletVelocity" class="tabular text-[11px] font-medium text-slate-500">0 orders</span>
+      <!-- Metric 3: Active Outlets -->
+      <div class="kpi-cell">
+        <div class="kpi-top">
+          <span class="kpi-title">Active Outlets</span>
+          <span id="kpiAvgOutBadge" class="badge neutral tabular">Avg Rp 0 / outlet</span>
         </div>
-        <div class="mt-2">
-          <div id="kpiOutlets" class="tabular text-2xl font-semibold text-slate-900 tracking-tight">0</div>
-          <div class="tabular text-xs text-slate-500 mt-1">
-            Avg / Outlet: <span id="kpiAvgOutlet" class="font-medium text-slate-700">Rp 0</span>
+        <div class="kpi-bottom">
+          <div id="kpiOutlets" class="kpi-value tabular">0</div>
+          <div class="progress-track">
+            <div id="kpiOutletCoverageBar" class="progress-fill" style="width:0%"></div>
           </div>
         </div>
       </div>
 
       <!-- Metric 4: Top Performing Entity (Dynamic per POV) -->
-      <div class="p-4 sm:p-5 flex flex-col justify-between">
-        <div class="flex items-center justify-between gap-2">
-          <span id="kpiTopEntityLabel" class="text-xs font-medium text-slate-500">Top Region</span>
-          <span id="kpiTopEntityPct" class="tabular text-[11px] font-semibold px-1.5 py-0.5 rounded bg-teal-50 text-teal-800">0.0%</span>
+      <div class="kpi-cell">
+        <div class="kpi-top">
+          <span class="kpi-title" id="kpiTopEntityLabel">Top Performing Region</span>
+          <span id="kpiTopEntityPct" class="badge emerald tabular">0.0%</span>
         </div>
-        <div class="mt-2">
-          <div id="kpiTopEntityName" class="text-lg font-semibold text-slate-900 tracking-tight truncate">—</div>
-          <div class="tabular text-xs text-slate-500 mt-1">
-            Volume: <span id="kpiTopEntityRev" class="font-medium text-slate-700">Rp 0</span>
+        <div class="kpi-bottom">
+          <div id="kpiTopEntityName" class="kpi-value entity">—</div>
+          <div class="kpi-sub tabular">
+            Volume: <strong id="kpiTopEntityRev">Rp 0</strong>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Main 2-Zone Analytical Workspace: Charts (Left 7 Cols) + Top/Lowest Operational Ranking (Right 5 Cols) -->
-    <section class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+    <!-- Main 2-Zone Analytical Workspace: Left 7 Cols + Right 5 Cols -->
+    <section class="analytical-grid">
 
-      <!-- Left Zone (7 cols): Primary Bar Chart + Brand Mix Donut -->
-      <div class="lg:col-span-7 flex flex-col gap-5">
-        <!-- Primary Bar Chart Card (SVG Precision Chart — Zero CDN failures) -->
-        <div class="bg-white border border-slate-200 rounded-lg p-5">
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+      <!-- Left Zone (7 cols): Primary Comparison Chart + Brand Mix Donut + Daily Timeline -->
+      <div class="left-stack">
+        <!-- Primary Bar Chart Card -->
+        <div class="card card-pad">
+          <div class="card-head">
             <div>
-              <h2 id="primaryChartTitle" class="text-sm font-semibold text-slate-900">Revenue vs. Target by Region</h2>
-              <p id="primaryChartSub" class="text-xs text-slate-500 mt-0.5">Actual sales against assigned quota across territories</p>
+              <h2 class="card-title" id="primaryChartTitle">Net Sales by Region</h2>
+              <p class="card-sub" id="primaryChartSub">Click any bar to filter the workspace by territory</p>
             </div>
-            <div class="flex items-center gap-4 text-xs text-slate-600">
-              <span class="inline-flex items-center gap-1.5">
-                <span class="w-2.5 h-2.5 rounded-xs bg-teal-700"></span>Actual
-              </span>
-              <span class="inline-flex items-center gap-1.5">
-                <span class="w-2.5 h-2.5 rounded-xs bg-slate-200 border border-slate-300"></span>Quota
-              </span>
+            <div class="legend-inline">
+              <span><i class="swatch-dot" style="background:var(--teal);"></i>Selected / Active</span>
+              <span><i class="swatch-dot" style="background:#CBD5E1;"></i>Peer Benchmark</span>
             </div>
           </div>
-          <div id="primarySvgChartContainer" class="w-full overflow-x-auto">
-            <!-- Rendered deterministically via JS SVG -->
+          <div id="primarySvgChartContainer" style="width:100%;overflow-x:auto;"></div>
+        </div>
+
+        <!-- Secondary Breakdown: Brand Mix Donut + Tabular Legend -->
+        <div class="card card-pad" id="donutCard">
+          <div class="card-head">
+            <div>
+              <h2 class="card-title" id="donutTitle">Brand Contribution &amp; Share</h2>
+              <p class="card-sub">Revenue share and volume across product lines (click slice or row to filter)</p>
+            </div>
+            <div class="mini-pills" id="donutDimSwitch"></div>
+          </div>
+
+          <div class="donut-grid">
+            <div class="donut-wrap" id="brandDonutContainer"></div>
+            <div class="donut-table" id="brandLegendTable"></div>
           </div>
         </div>
 
-        <!-- Secondary Breakdown: Brand Mix Donut + Tabular Breakdown -->
-        <div class="bg-white border border-slate-200 rounded-lg p-5 flex-1">
-          <div class="flex items-center justify-between mb-4">
+        <!-- Daily Net Sales Brush Card -->
+        <div class="card card-pad">
+          <div class="card-head" style="margin-bottom:10px;">
             <div>
-              <h2 class="text-sm font-semibold text-slate-900">Brand Contribution &amp; Attainment</h2>
-              <p class="text-xs text-slate-500 mt-0.5">Revenue share and target achievement by product line</p>
+              <h2 class="card-title">Daily Net Sales Timeline</h2>
+              <p class="card-sub" id="stripNote">Drag across bars to isolate a custom date window</p>
+            </div>
+            <div class="date-inputs">
+              <label>From <input type="date" id="dFrom" /></label>
+              <label>To <input type="date" id="dTo" /></label>
             </div>
           </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-12 gap-5 items-center">
-            <!-- Crisp SVG Donut -->
-            <div class="sm:col-span-5 flex items-center justify-center">
-              <div id="brandDonutContainer" class="w-40 h-40"></div>
-            </div>
-            <!-- Tabular Legend -->
-            <div id="brandLegendTable" class="sm:col-span-7 divide-y divide-slate-100 border-t border-b border-slate-100">
-              <!-- Populated via JS -->
-            </div>
+          <svg id="strip" viewBox="0 0 1000 108" role="img" aria-label="Daily net sales chart. Drag to select date range."></svg>
+          <div class="strip-footer tabular">
+            <span id="axL"></span>
+            <span>Click chart to reset date window</span>
+            <span id="axR"></span>
           </div>
         </div>
       </div>
 
       <!-- Right Zone (5 cols): Top vs. Lowest Operational Rankings Module -->
-      <div class="lg:col-span-5 bg-white border border-slate-200 rounded-lg p-5 flex flex-col justify-between">
+      <div class="card card-pad ranking-card">
         <div>
-          <!-- Header & Top/Lowest Toggle -->
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 pb-3.5 border-b border-slate-200">
+          <div class="ranking-header">
             <div>
-              <h2 class="text-sm font-semibold text-slate-900">Operational Rankings</h2>
-              <p id="rankingContextSub" class="text-xs text-slate-500 mt-0.5">Scoped to All Regions</p>
+              <h2 class="card-title">Operational Rankings</h2>
+              <p class="card-sub" id="rankingContextSub">Scoped to All Regions</p>
             </div>
 
-            <!-- Segmented Toggle: Top Performers vs Lowest Performers -->
-            <div class="inline-flex p-0.5 rounded-md bg-slate-100 border border-slate-200 self-start sm:self-auto">
-              <button
-                id="btnRankTop"
-                type="button"
-                onclick="setRankingDirection('top')"
-                class="px-2.5 py-1 rounded text-xs font-medium transition-colors bg-white text-slate-900 border border-slate-200/80"
-              >
-                Top Performers
-              </button>
-              <button
-                id="btnRankLowest"
-                type="button"
-                onclick="setRankingDirection('lowest')"
-                class="px-2.5 py-1 rounded text-xs font-medium transition-colors text-slate-600 hover:text-slate-900"
-              >
-                Lowest (Attention)
-              </button>
+            <div class="segmented">
+              <button type="button" id="btnRankTop" class="seg-btn active" data-rankdir="top">Top Performers</button>
+              <button type="button" id="btnRankLowest" class="seg-btn" data-rankdir="lowest">Lowest (Attention)</button>
             </div>
           </div>
 
-          <!-- Category Tabs: Outlets | Brands | Salespeople -->
-          <div class="grid grid-cols-3 border-b border-slate-200 mt-1" role="tablist">
-            <button
-              id="tabRankOutlets"
-              type="button"
-              onclick="setRankingCategory('outlets')"
-              class="py-2.5 text-xs font-semibold border-b-2 border-teal-700 text-teal-800 transition-colors"
-            >
-              Outlets
-            </button>
-            <button
-              id="tabRankBrands"
-              type="button"
-              onclick="setRankingCategory('brands')"
-              class="py-2.5 text-xs font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition-colors"
-            >
-              Brands
-            </button>
-            <button
-              id="tabRankSalespeople"
-              type="button"
-              onclick="setRankingCategory('salespeople')"
-              class="py-2.5 text-xs font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition-colors"
-            >
-              Salespeople
-            </button>
+          <div class="cat-tabs" role="tablist">
+            <button type="button" id="tabRankOutlets" class="cat-tab active" data-rankcat="outlets">Outlets</button>
+            <button type="button" id="tabRankBrands" class="cat-tab" data-rankcat="brands">Brands</button>
+            <button type="button" id="tabRankSalespeople" class="cat-tab" data-rankcat="salespeople">Salespeople</button>
           </div>
 
-          <!-- Ranked Rows Container -->
-          <div id="rankingRowsList" class="divide-y divide-slate-100 mt-1">
-            <!-- Populated via JS -->
+          <div class="rank-subbar" id="outletBasisBar">
+            <span>Ranking basis:</span>
+            <div class="mini-pills">
+              <button type="button" class="mini-pill active" data-outmode="total">Net Sales</button>
+              <button type="button" class="mini-pill" data-outmode="peer">Vs Same Type Median</button>
+            </div>
           </div>
+
+          <div id="rankingRowsList" class="rank-list"></div>
         </div>
 
-        <!-- Subtle Contextual Note -->
-        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
-          <span>Sorted by Quota Attainment %</span>
+        <div class="rank-footer">
+          <span id="rankingSortMeta">Sorted by Net Sales</span>
           <span id="rankingCountMeta" class="tabular">Showing 5 accounts</span>
         </div>
       </div>
     </section>
 
-    <!-- Combined Performance Breakdown Table -->
-    <section aria-label="Account and Salesperson Performance Ledger" class="bg-white border border-slate-200 rounded-lg overflow-hidden">
-      <!-- Table Header & Controls -->
-      <div class="px-5 py-4 border-b border-slate-200 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+    <!-- Region by Brand Cross-Tab Matrix (Director Helicopter View) -->
+    <section class="card" id="matrixSection">
+      <div class="table-header">
         <div>
-          <h2 class="text-sm font-semibold text-slate-900">Account &amp; Salesperson Performance Ledger</h2>
-          <p class="text-xs text-slate-500 mt-0.5">Outlet-level revenue, quota attainment, and assigned rep ownership</p>
+          <h2 class="card-title">Region × Brand Volume Matrix</h2>
+          <p class="card-sub">Net sales in Rp millions · Click any region or brand header to cross-filter</p>
+        </div>
+      </div>
+      <div class="table-scroll" id="gridContainer"></div>
+    </section>
+
+    <!-- Full-Width Account & Outlet Performance Ledger -->
+    <section aria-label="Account and Outlet Performance Ledger" class="card" id="ledgerWrap">
+      <div class="table-header">
+        <div>
+          <h2 class="card-title">Account &amp; Outlet Performance Ledger</h2>
+          <p class="card-sub" id="ledgerCount">Outlet-level net sales, invoice frequency, and peer median comparison</p>
         </div>
 
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-          <!-- Search Input -->
-          <div class="relative">
-            <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <div class="table-tools">
+          <div class="search-box">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
             </svg>
-            <input
-              id="tableSearch"
-              type="text"
-              oninput="renderLedgerTable()"
-              placeholder="Filter outlet, rep, or brand..."
-              class="h-8 w-full sm:w-56 pl-8 pr-2.5 rounded-md border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:border-teal-700 focus:outline-none"
-            />
+            <input id="q" type="search" class="search-input" placeholder="Filter outlet, ID, branch, or type..." aria-label="Search outlets" />
           </div>
 
-          <!-- Status Filter -->
-          <select id="tableStatusFilter" onchange="renderLedgerTable()" class="h-8 rounded-md border border-slate-200 bg-white px-2.5 text-xs font-medium text-slate-700 focus:border-teal-700 focus:outline-none">
-            <option value="ALL">Status: All</option>
-            <option value="On Track">On Track (≥95%)</option>
-            <option value="At Risk">At Risk (80–94%)</option>
-            <option value="Behind">Behind (&lt;80%)</option>
+          <select id="tableStatusFilter" class="ctrl-select" style="min-width:165px;">
+            <option value="ALL">Benchmark: All</option>
+            <option value="Above Median">Above Median (≥100%)</option>
+            <option value="Near Median">Near Median (75–99%)</option>
+            <option value="Below Median">Attention (&lt;75%)</option>
           </select>
         </div>
       </div>
 
-      <!-- Responsive Table -->
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
+      <div class="table-scroll">
+        <table class="ledger-tbl">
           <thead>
-            <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-              <th class="py-2.5 px-4 cursor-pointer hover:text-slate-900 select-none" onclick="toggleSort('outlet')">
-                Outlet / Account <span id="sort-outlet" class="text-slate-400">↕</span>
-              </th>
-              <th class="py-2.5 px-4 cursor-pointer hover:text-slate-900 select-none" onclick="toggleSort('region')">
-                Region <span id="sort-region" class="text-slate-400">↕</span>
-              </th>
-              <th class="py-2.5 px-4 cursor-pointer hover:text-slate-900 select-none" onclick="toggleSort('salesperson')">
-                Assigned Rep <span id="sort-salesperson" class="text-slate-400">↕</span>
-              </th>
-              <th class="py-2.5 px-4 cursor-pointer hover:text-slate-900 select-none" onclick="toggleSort('brand')">
-                Primary Brand <span id="sort-brand" class="text-slate-400">↕</span>
-              </th>
-              <th class="py-2.5 px-4 text-right cursor-pointer hover:text-slate-900 select-none" onclick="toggleSort('actual')">
-                Actual Sales <span id="sort-actual" class="text-slate-400">↕</span>
-              </th>
-              <th class="py-2.5 px-4 text-right cursor-pointer hover:text-slate-900 select-none" onclick="toggleSort('target')">
-                Target <span id="sort-target" class="text-slate-400">↕</span>
-              </th>
-              <th class="py-2.5 px-4 min-w-[165px] cursor-pointer hover:text-slate-900 select-none" onclick="toggleSort('attainment')">
-                Attainment <span id="sort-attainment" class="text-teal-700">↓</span>
-              </th>
-              <th class="py-2.5 px-4 text-right">Status</th>
+            <tr>
+              <th data-sort="name">Outlet / Account <span class="ar"></span></th>
+              <th data-sort="region">Region &amp; Branch <span class="ar"></span></th>
+              <th data-sort="type">Channel / Type <span class="ar"></span></th>
+              <th class="num" data-sort="inv">Invoices <span class="ar"></span></th>
+              <th class="num" data-sort="net">Net Sales (Rp) <span class="ar"></span></th>
+              <th data-sort="rel">Vs Type Median <span class="ar">↓</span></th>
+              <th class="num">Benchmark</th>
             </tr>
           </thead>
-          <tbody id="ledgerTableBody" class="divide-y divide-slate-100 text-xs">
-            <!-- Populated via JS -->
-          </tbody>
+          <tbody id="ledgerBody"></tbody>
         </table>
       </div>
 
-      <!-- Empty State -->
-      <div id="ledgerEmpty" class="hidden py-10 px-4 text-center">
-        <p class="text-xs font-semibold text-slate-700">No records match the active filter criteria.</p>
-        <p class="text-[11px] text-slate-500 mt-1">Clear your search query or reset territory filters to restore rows.</p>
+      <div class="table-footer">
+        <span id="ledgerShowingMeta">Showing 0 outlets</span>
+        <button type="button" class="btn secondary" id="btnShowAll" data-showall hidden>Show all</button>
+      </div>
+    </section>
+
+    <!-- Bottom Utility Row: Telegram Summary & Data Cleaning Audit -->
+    <section class="utility-grid">
+      <div class="card card-pad">
+        <div class="card-head" style="margin-bottom:10px;">
+          <div>
+            <h2 class="card-title">Field Summary for Telegram / WhatsApp</h2>
+            <p class="card-sub">Auto-generated briefing reflecting your active perspective and filters</p>
+          </div>
+          <div class="segmented">
+            <button type="button" class="seg-btn active" data-lang="id">Bahasa Indonesia</button>
+            <button type="button" class="seg-btn" data-lang="en">English</button>
+          </div>
+        </div>
+        <p class="summary-box" id="summaryText" aria-live="polite"></p>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <button type="button" class="btn" id="btnCopy">Copy briefing</button>
+          <span id="copied" style="font-size:12px;color:var(--teal);font-weight:600;" role="status"></span>
+        </div>
+      </div>
+
+      <div class="card card-pad">
+        <div class="card-head" style="margin-bottom:10px;">
+          <div>
+            <h2 class="card-title">Data Hygiene &amp; Column Provenance</h2>
+            <p class="card-sub">Automated standardization applied during CSV ingestion</p>
+          </div>
+        </div>
+        <ul class="audit-list" id="dq"></ul>
+        <label class="chk-label">
+          <input type="checkbox" id="dedup" checked />
+          Remove exact duplicate invoice lines
+        </label>
       </div>
     </section>
 
   </main>
 
   <script>
-    /**
-     * =========================================================================
-     * 1. STRUCTURED DATASET (5 Regions, 18 Salespeople, 4 Brands, 25 Outlets)
-     * =========================================================================
-     */
-    const REGIONS = ['Jakarta', 'Bandung', 'Surabaya', 'Yogyakarta', 'Medan'];
+  (() => {
+    'use strict';
 
-    const BRANDS = [
-      { name: 'Nusantara Roast', color: '#0F766E' }, // Deep Teal
-      { name: 'Kopi Prima',      color: '#1D4ED8' }, // Cobalt Blue
-      { name: 'Sari Teh',        color: '#D97706' }, // Muted Amber
-      { name: 'Botani Drink',    color: '#475569' }  // Slate
+    const $ = id => document.getElementById(id);
+    const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const MONID = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    const BRAND_COLORS = ['#0F766E', '#2563EB', '#D97706', '#4F46E5', '#059669'];
+    const OTHER_COLOR = '#64748B';
+
+    const FIELDS = [
+      {k:'date',  label:'Date', req:true, al:['date','tanggal','tgl','invoice_date','order_date','trx_date','transaction_date']},
+      {k:'net',   label:'Net sales (amount)', req:true, al:['net_sales_idr','net_sales','net_amount','net','amount','revenue','penjualan_bersih','nilai','sales','total']},
+      {k:'inv',   label:'Invoice number', al:['invoice_no','invoice','invoice_number','inv_no','no_invoice','order_id','no_faktur','faktur']},
+      {k:'region',label:'Region', al:['region','area','wilayah','zone']},
+      {k:'branch',label:'Branch or city', al:['branch','city','kota','cabang','depo']},
+      {k:'oid',   label:'Outlet ID', al:['outlet_id','customer_id','store_id','cust_id','kode_outlet']},
+      {k:'oname', label:'Outlet name', al:['outlet_name','customer_name','customer','store_name','store','nama_outlet','outlet','toko']},
+      {k:'otype', label:'Outlet type', al:['outlet_type','channel','tipe_outlet','segment','type']},
+      {k:'sm',    label:'Salesperson', al:['salesman','salesperson','sales_rep','sales_name','nama_sales','rep']},
+      {k:'brand', label:'Brand', al:['brand','merek']},
+      {k:'qty',   label:'Quantity (to spot returns)', al:['qty_carton','qty','quantity','jumlah']}
     ];
 
-    const PERIOD_CONFIG = {
-      MTD: { label: 'MTD (Nov 2026)', mult: 1.0,  delta: '+6.4% vs Oct' },
-      Q4:  { label: 'Q4 2026',        mult: 2.85, delta: '+8.1% vs Q3' },
-      YTD: { label: 'YTD 2026',       mult: 10.4, delta: '+11.2% YoY' }
+    const DIMFIELD = {region:'region', brand:'brand', sm:'sm', type:'otype'};
+    const DIMLABEL = {region:'Region', brand:'Brand', sm:'Salesperson', type:'Outlet type'};
+
+    let TAB = null, M = null, RAW = '', S = null, F = null;
+
+    const UI = {
+      pov: 'director',        // 'director' | 'manager'
+      donutDim: 'brand',      // 'brand' | 'region' | 'type'
+      rankDir: 'top',         // 'top' | 'lowest'
+      rankCat: 'outlets',     // 'outlets' | 'brands' | 'salespeople'
+      outMode: 'total',       // 'total' | 'peer'
+      lang: 'id',
+      sortCol: 'net',
+      sortDir: 'desc',
+      showAll: false,
+      q: '',
+      statusFilter: 'ALL',
+      dedup: true
     };
 
-    const SALESPEOPLE = [
-      // Jakarta (4)
-      { id: 'SP-JKT-1', name: 'Rizky Pratama',   region: 'Jakarta',    territory: 'South Jakarta' },
-      { id: 'SP-JKT-2', name: 'Nadia Putri',     region: 'Jakarta',    territory: 'West Jakarta' },
-      { id: 'SP-JKT-3', name: 'Dimas Saputra',   region: 'Jakarta',    territory: 'North & Central' },
-      { id: 'SP-JKT-4', name: 'Tari Handayani',  region: 'Jakarta',    territory: 'East Jakarta' },
-      // Bandung (4)
-      { id: 'SP-BDG-1', name: 'Galih Permana',   region: 'Bandung',    territory: 'Bandung Central' },
-      { id: 'SP-BDG-2', name: 'Sinta Maharani',  region: 'Bandung',    territory: 'Cimahi & West' },
-      { id: 'SP-BDG-3', name: 'Reza Firmansyah', region: 'Bandung',    territory: 'South Bandung' },
-      { id: 'SP-BDG-4', name: 'Ayu Lestari',     region: 'Bandung',    territory: 'Jatinangor' },
-      // Surabaya (4)
-      { id: 'SP-SBY-1', name: 'Budi Santoso',    region: 'Surabaya',   territory: 'Surabaya CBD' },
-      { id: 'SP-SBY-2', name: 'Dewi Anggraini',  region: 'Surabaya',   territory: 'East Surabaya' },
-      { id: 'SP-SBY-3', name: 'Arif Setiawan',   region: 'Surabaya',   territory: 'Sidoarjo' },
-      { id: 'SP-SBY-4', name: 'Maya Kusuma',     region: 'Surabaya',   territory: 'Gresik' },
-      // Yogyakarta (3)
-      { id: 'SP-YGY-1', name: 'Bagus Wijaya',    region: 'Yogyakarta', territory: 'Sleman & City' },
-      { id: 'SP-YGY-2', name: 'Anisa Rahma',     region: 'Yogyakarta', territory: 'Bantul' },
-      { id: 'SP-YGY-3', name: 'Yoga Pradipta',   region: 'Yogyakarta', territory: 'Wonosari' },
-      // Medan (3)
-      { id: 'SP-MDN-1', name: 'Hendrik Siregar', region: 'Medan',      territory: 'Medan Kota' },
-      { id: 'SP-MDN-2', name: 'Clara Hutapea',   region: 'Medan',      territory: 'Deli Serdang' },
-      { id: 'SP-MDN-3', name: 'Fauzan Lubis',    region: 'Medan',      territory: 'Binjai' }
-    ];
+    /* ---------- Formatting & Benchmark Helpers ---------- */
+    const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const int = n => Math.round(n).toLocaleString('en-US');
+    const rpExact = n => 'Rp ' + int(n);
 
-    // Base MTD Account / Outlet Ledger Records (in IDR)
-    const LEDGER_RECORDS = [
-      // Jakarta
-      { outlet: 'GrandLucky SCBD',              region: 'Jakarta',    spId: 'SP-JKT-1', brand: 'Nusantara Roast', actual: 485000000, target: 440000000, orders: 64 },
-      { outlet: 'Superindo Pondok Indah',       region: 'Jakarta',    spId: 'SP-JKT-1', brand: 'Kopi Prima',      actual: 390000000, target: 370000000, orders: 52 },
-      { outlet: 'Ranch Market Puri Indah',      region: 'Jakarta',    spId: 'SP-JKT-2', brand: 'Sari Teh',        actual: 340000000, target: 335000000, orders: 48 },
-      { outlet: 'Agen Grosir Jaya Pluit',       region: 'Jakarta',    spId: 'SP-JKT-3', brand: 'Nusantara Roast', actual: 310000000, target: 340000000, orders: 41 },
-      { outlet: 'Toko Makmur Jatinegara',       region: 'Jakarta',    spId: 'SP-JKT-4', brand: 'Botani Drink',    actual: 175000000, target: 250000000, orders: 26 },
-      { outlet: 'UD Sumber Rezeki Klender',     region: 'Jakarta',    spId: 'SP-JKT-4', brand: 'Sari Teh',        actual: 145000000, target: 210000000, orders: 21 },
-
-      // Bandung
-      { outlet: 'Yogya Riau Junction',          region: 'Bandung',    spId: 'SP-BDG-1', brand: 'Nusantara Roast', actual: 365000000, target: 330000000, orders: 49 },
-      { outlet: 'Grosir Pasar Baru Center',     region: 'Bandung',    spId: 'SP-BDG-1', brand: 'Kopi Prima',      actual: 295000000, target: 285000000, orders: 38 },
-      { outlet: 'Borma Toserba Dago',           region: 'Bandung',    spId: 'SP-BDG-2', brand: 'Sari Teh',        actual: 250000000, target: 260000000, orders: 34 },
-      { outlet: 'Toko Sinar Abadi Soreang',     region: 'Bandung',    spId: 'SP-BDG-3', brand: 'Botani Drink',    actual: 165000000, target: 205000000, orders: 23 },
-      { outlet: 'Warung Grosir Jatinangor',     region: 'Bandung',    spId: 'SP-BDG-4', brand: 'Kopi Prima',      actual: 120000000, target: 175000000, orders: 18 },
-
-      // Surabaya
-      { outlet: 'Hokky Buah P. Sudirman',       region: 'Surabaya',   spId: 'SP-SBY-1', brand: 'Nusantara Roast', actual: 445000000, target: 400000000, orders: 58 },
-      { outlet: 'Grosir Pabean Jaya',           region: 'Surabaya',   spId: 'SP-SBY-1', brand: 'Kopi Prima',      actual: 360000000, target: 345000000, orders: 46 },
-      { outlet: 'Papaya Fresh Gallery Darmo',   region: 'Surabaya',   spId: 'SP-SBY-2', brand: 'Sari Teh',        actual: 315000000, target: 310000000, orders: 42 },
-      { outlet: 'Toko Makmur Waru',             region: 'Surabaya',   spId: 'SP-SBY-3', brand: 'Botani Drink',    actual: 210000000, target: 250000000, orders: 29 },
-      { outlet: 'UD Maju Bersama Gresik',       region: 'Surabaya',   spId: 'SP-SBY-4', brand: 'Sari Teh',        actual: 140000000, target: 195000000, orders: 19 },
-
-      // Yogyakarta
-      { outlet: 'Mirota Kampus Sudirman',       region: 'Yogyakarta', spId: 'SP-YGY-1', brand: 'Nusantara Roast', actual: 290000000, target: 265000000, orders: 40 },
-      { outlet: 'Pamela Supermarket Kusuma',    region: 'Yogyakarta', spId: 'SP-YGY-1', brand: 'Sari Teh',        actual: 245000000, target: 240000000, orders: 35 },
-      { outlet: 'Grosir Beringharjo Timur',     region: 'Yogyakarta', spId: 'SP-YGY-2', brand: 'Kopi Prima',      actual: 195000000, target: 215000000, orders: 28 },
-      { outlet: 'Agen Sembako Wonosari',        region: 'Yogyakarta', spId: 'SP-YGY-3', brand: 'Botani Drink',    actual: 105000000, target: 150000000, orders: 15 },
-
-      // Medan
-      { outlet: 'Brastagi Supermarket Tiara',   region: 'Medan',      spId: 'SP-MDN-1', brand: 'Nusantara Roast', actual: 380000000, target: 350000000, orders: 51 },
-      { outlet: 'Grosir Pusat Pasar Medan',     region: 'Medan',      spId: 'SP-MDN-1', brand: 'Kopi Prima',      actual: 305000000, target: 295000000, orders: 41 },
-      { outlet: 'Maju Bersama Deli Serdang',    region: 'Medan',      spId: 'SP-MDN-2', brand: 'Sari Teh',        actual: 225000000, target: 245000000, orders: 31 },
-      { outlet: 'Toko Kelontong Binjai Raya',   region: 'Medan',      spId: 'SP-MDN-3', brand: 'Botani Drink',    actual: 130000000, target: 180000000, orders: 18 }
-    ];
-
-    /**
-     * =========================================================================
-     * 2. APPLICATION STATE
-     * =========================================================================
-     */
-    const state = {
-      role: 'director',        // 'director' | 'manager'
-      region: 'ALL',           // 'ALL' | 'Jakarta' | 'Bandung' | 'Surabaya' | 'Yogyakarta' | 'Medan'
-      brand: 'ALL',            // 'ALL' | Brand Name
-      salesperson: 'ALL',      // 'ALL' | spId
-      period: 'MTD',           // 'MTD' | 'Q4' | 'YTD'
-      rankDirection: 'top',    // 'top' | 'lowest'
-      rankCategory: 'outlets', // 'outlets' | 'brands' | 'salespeople'
-      sortCol: 'attainment',
-      sortDir: 'desc'
+    const rpCompact = n => {
+      const a = Math.abs(n), s = n < 0 ? '-' : '';
+      if (a >= 1e9) return s + 'Rp ' + (a / 1e9).toFixed(2) + 'B';
+      if (a >= 1e6) return s + 'Rp ' + (a / 1e6).toFixed(a >= 1e8 ? 0 : 1) + 'M';
+      if (a >= 1e3) return s + 'Rp ' + Math.round(a / 1e3) + 'K';
+      return s + 'Rp ' + Math.round(a);
     };
 
-    /**
-     * =========================================================================
-     * 3. FORMATTERS & SEMANTIC HELPERS
-     * =========================================================================
-     */
-    function formatIDRCompact(val) {
-      if (val >= 1_000_000_000) {
-        return 'Rp ' + (val / 1_000_000_000).toFixed(2) + 'B';
-      }
-      if (val >= 1_000_000) {
-        return 'Rp ' + Math.round(val / 1_000_000) + 'M';
-      }
-      return 'Rp ' + Math.round(val).toLocaleString('en-US');
-    }
+    const rpID = n => {
+      const a = Math.abs(n), s = n < 0 ? '-' : '';
+      if (a >= 1e9) return s + 'Rp ' + (a / 1e9).toFixed(2).replace('.', ',') + ' miliar';
+      if (a >= 1e6) return s + 'Rp ' + (a / 1e6).toFixed(1).replace('.', ',') + ' juta';
+      return s + 'Rp ' + Math.round(a).toLocaleString('id-ID');
+    };
 
-    function formatIDRExact(val) {
-      return 'Rp ' + Math.round(val).toLocaleString('en-US');
-    }
+    const dec = (x, d, L) => {
+      const s = x.toFixed(d);
+      return L === 'id' ? s.replace('.', ',') : s;
+    };
 
-    function getStatusMeta(pct) {
-      if (pct >= 95) {
+    const pc = (a, b, L) => b > 0 ? dec(a / b * 100, 1, L) + '%' : '0%';
+
+    const median = a => {
+      if (!a.length) return 0;
+      const s = a.slice().sort((x, y) => x - y), m = s.length >> 1;
+      return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+    };
+
+    function getBenchmarkMeta(relPct) {
+      if (relPct >= 100) {
         return {
-          label: 'On Track',
-          pillClass: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-          barColor: '#15803D',
-          textClass: 'text-emerald-700'
+          label: 'Above Median',
+          badgeClass: 'emerald',
+          barColor: '#0F766E',
+          textColor: '#047857'
         };
       }
-      if (pct >= 80) {
+      if (relPct >= 75) {
         return {
-          label: 'At Risk',
-          pillClass: 'bg-amber-50 text-amber-700 border-amber-200',
-          barColor: '#B45309',
-          textClass: 'text-amber-700'
+          label: 'Near Median',
+          badgeClass: 'amber',
+          barColor: '#D97706',
+          textColor: '#B45309'
         };
       }
       return {
-        label: 'Behind',
-        pillClass: 'bg-red-50 text-red-700 border-red-200',
+        label: 'Below Median',
+        badgeClass: 'red',
         barColor: '#B91C1C',
-        textClass: 'text-red-700'
+        textColor: '#B91C1C'
       };
     }
 
-    function getSalespersonById(id) {
-      return SALESPEOPLE.find(s => s.id === id) || { name: 'Unassigned', territory: '', region: '' };
+    /* ---------- Dates ---------- */
+    function parseDate(s) {
+      let y, mo, d, df = false, m = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(s);
+      if (m) { y = +m[1]; mo = +m[2]; d = +m[3]; }
+      else {
+        m = /^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/.exec(s);
+        if (!m) return null;
+        d = +m[1]; mo = +m[2]; y = +m[3]; if (y < 100) y += 2000; df = true;
+      }
+      if (mo < 1 || mo > 12 || d < 1 || d > 31) return null;
+      return {t: Date.UTC(y, mo - 1, d) / 864e5, month: y + '-' + ('0' + mo).slice(-2), df};
     }
 
-    /**
-     * =========================================================================
-     * 4. ROLE PERSPECTIVE & FILTER ORCHESTRATION
-     * =========================================================================
-     */
-    function switchRole(role) {
-      state.role = role;
-      const btnDirector = document.getElementById('btnRoleDirector');
-      const btnManager = document.getElementById('btnRoleManager');
-      const managerAreaBar = document.getElementById('managerAreaBar');
-      const regionSelect = document.getElementById('filterRegion');
-      const allOpt = regionSelect.querySelector('option[value="ALL"]');
+    const tToStr = t => new Date(t * 864e5).toISOString().slice(0, 10);
+    const dfmt = (t, L) => {
+      const d = new Date(t * 864e5);
+      return d.getUTCDate() + ' ' + (L === 'id' ? MONID : MON)[d.getUTCMonth()] + ' ' + d.getUTCFullYear();
+    };
+    const dShort = t => {
+      const d = new Date(t * 864e5);
+      return d.getUTCDate() + ' ' + MON[d.getUTCMonth()];
+    };
+    const monthLabel = (m, L) => {
+      const p = m.split('-');
+      return (L === 'id' ? MONID : MON)[+p[1] - 1] + ' ' + p[0];
+    };
+    const monthRange = m => {
+      const p = m.split('-'), y = +p[0], mo = +p[1];
+      return [Date.UTC(y, mo - 1, 1) / 864e5, Date.UTC(y, mo, 0) / 864e5];
+    };
+    const prevMonth = m => {
+      const p = m.split('-');
+      let y = +p[0], mo = +p[1] - 1;
+      if (mo < 1) { mo = 12; y--; }
+      return y + '-' + ('0' + mo).slice(-2);
+    };
 
-      if (role === 'director') {
-        btnDirector.className = 'px-3 py-1.5 rounded-md text-xs font-medium transition-colors bg-white text-slate-900 border border-slate-200/80';
-        btnManager.className = 'px-3 py-1.5 rounded-md text-xs font-medium transition-colors text-slate-600 hover:text-slate-900';
-        managerAreaBar.classList.add('hidden');
-        managerAreaBar.classList.remove('flex');
+    function num(raw) {
+      let s = String(raw).replace(/rp|idr/gi, '').replace(/\s/g, '');
+      if (s === '') return NaN;
+      if (/^-?\d{1,3}(\.\d{3})+(,\d+)?$/.test(s)) s = s.replace(/\./g, '').replace(',', '.');
+      else s = s.replace(/,/g, '');
+      const n = Number(s);
+      return Number.isFinite(n) ? n : NaN;
+    }
 
-        allOpt.hidden = false;
-        allOpt.disabled = false;
-        state.region = 'ALL';
-        regionSelect.value = 'ALL';
-      } else {
-        btnManager.className = 'px-3 py-1.5 rounded-md text-xs font-medium transition-colors bg-white text-slate-900 border border-slate-200/80';
-        btnDirector.className = 'px-3 py-1.5 rounded-md text-xs font-medium transition-colors text-slate-600 hover:text-slate-900';
-        managerAreaBar.classList.remove('hidden');
-        managerAreaBar.classList.add('flex');
+    /* ---------- CSV Parser ---------- */
+    function detectDelim(t) {
+      const end = t.indexOf('\n'), line = end > 0 ? t.slice(0, end) : t, c = {',':0, ';':0, '\t':0};
+      let q = false;
+      for (const ch of line) {
+        if (ch === '"') q = !q;
+        else if (!q && ch in c) c[ch]++;
+      }
+      if (c[';'] > c[','] && c[';'] >= c['\t']) return ';';
+      return c['\t'] > c[','] ? '\t' : ',';
+    }
 
-        // Sales Manager view strictly hides "All Regions" and scopes to an active territory
-        allOpt.hidden = true;
-        allOpt.disabled = true;
-        if (state.region === 'ALL') {
-          state.region = 'Jakarta';
+    function parseCSV(t, dl) {
+      const rows = []; let row = [], f = '', q = false;
+      for (let i = 0; i < t.length; i++) {
+        const c = t[i];
+        if (q) {
+          if (c === '"') { if (t[i + 1] === '"') { f += '"'; i++; } else q = false; }
+          else f += c;
+        } else if (c === '"') q = true;
+        else if (c === dl) { row.push(f); f = ''; }
+        else if (c === '\n') { row.push(f); rows.push(row); row = []; f = ''; }
+        else if (c !== '\r') f += c;
+      }
+      if (f.length || row.length) { row.push(f); rows.push(row); }
+      return rows.filter(r => r.some(x => x.trim() !== ''));
+    }
+
+    const norm = h => h.trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+
+    function autoMap(head) {
+      const nh = head.map(norm), used = {}, map = {};
+      FIELDS.forEach(f => {
+        let idx = -1;
+        for (const a of f.al) {
+          if (idx >= 0) break;
+          for (let i = 0; i < nh.length; i++) if (!used[i] && nh[i] === a) { idx = i; break; }
         }
-        regionSelect.value = state.region;
-        syncAreaPills();
+        if (idx < 0) {
+          for (const a of f.al) {
+            if (idx >= 0) break;
+            if (a.length < 5) continue;
+            for (let i = 0; i < nh.length; i++) if (!used[i] && nh[i].includes(a)) { idx = i; break; }
+          }
+        }
+        map[f.k] = idx;
+        if (idx >= 0) used[idx] = 1;
+      });
+      return map;
+    }
+
+    /* ---------- Load + Clean ---------- */
+    function loadText(text, name) {
+      $('err').textContent = '';
+      try { ingest(text, name); }
+      catch (e) { $('err').textContent = e.message; showLoader(); }
+    }
+
+    function ingest(text, name) {
+      RAW = text;
+      const rows = parseCSV(text.replace(/^\uFEFF/, ''), detectDelim(text));
+      if (rows.length < 2) throw new Error('That file has no data rows.');
+      TAB = {name, head: rows[0].map(h => h.trim()), rows: rows.slice(1)};
+      M = autoMap(TAB.head);
+      if (M.date < 0 || M.net < 0) { openMapper(true); return; }
+      build();
+      showApp();
+    }
+
+    function build() {
+      const ix = M;
+      const q = {read: TAB.rows.length, dup: 0, dupInv: [], invalid: 0, invalidAt: [], blank: {}, fix: {}, returns: 0, dayFirst: 0, trim: 0, shared: []};
+      const cell = (r, k) => ix[k] >= 0 && r[ix[k]] != null ? String(r[ix[k]]) : '';
+      const g = (r, k) => cell(r, k).trim().replace(/\s+/g, ' ');
+      const seen = new Set(), recs = [];
+
+      TAB.rows.forEach((r, i) => {
+        const key = r.map(x => String(x == null ? '' : x).trim()).join('\u0001');
+        const inv = g(r, 'inv');
+        if (seen.has(key)) {
+          q.dup++;
+          if (q.dupInv.length < 8) q.dupInv.push(inv || 'row ' + (i + 2));
+          if (UI.dedup) return;
+        }
+        seen.add(key);
+
+        const dt = parseDate(g(r, 'date')), net = num(g(r, 'net'));
+        if (!dt || Number.isNaN(net)) {
+          q.invalid++;
+          if (q.invalidAt.length < 5) q.invalidAt.push(i + 2);
+          return;
+        }
+        if (dt.df) q.dayFirst++;
+        if (FIELDS.some(f => { const c = cell(r, f.k); return ix[f.k] >= 0 && c !== c.trim(); })) q.trim++;
+
+        const qty = ix.qty >= 0 ? num(g(r, 'qty')) : NaN;
+        const ret = net < 0 || qty < 0 || /^(rtr|retur)/i.test(inv);
+        if (ret) q.returns++;
+
+        recs.push({
+          t: dt.t, m: dt.month, inv,
+          region: g(r, 'region'), branch: g(r, 'branch'),
+          oid: g(r, 'oid'), oname: g(r, 'oname'), otype: g(r, 'otype'),
+          sm: g(r, 'sm'), brand: g(r, 'brand'),
+          net, ret, line: i + 2
+        });
+      });
+
+      if (!recs.length) throw new Error('No usable rows. Check the date and net sales columns.');
+
+      const has = {
+        region: ix.region >= 0, branch: ix.branch >= 0, brand: ix.brand >= 0,
+        sm: ix.sm >= 0, type: ix.otype >= 0, outlet: ix.oid >= 0 || ix.oname >= 0, inv: ix.inv >= 0
+      };
+
+      const REGALIAS = {jabar: 'Jawa Barat', jateng: 'Jawa Tengah', jatim: 'Jawa Timur'};
+      const canon = (field, alias) => {
+        const cnt = {};
+        recs.forEach(r => {
+          const v = r[field];
+          if (!v) return;
+          let k = v.toLowerCase();
+          if (alias && alias[k]) k = alias[k].toLowerCase();
+          const o = cnt[k] || (cnt[k] = {});
+          const label = alias && alias[v.toLowerCase()] ? alias[v.toLowerCase()] : v;
+          o[label] = (o[label] || 0) + 1;
+        });
+        const best = {};
+        Object.keys(cnt).forEach(k => {
+          let bv = null, bc = -1;
+          Object.keys(cnt[k]).forEach(x => { if (cnt[k][x] > bc) { bc = cnt[k][x]; bv = x; } });
+          best[k] = bv;
+        });
+        let n = 0;
+        recs.forEach(r => {
+          const v = r[field];
+          if (!v) return;
+          let k = v.toLowerCase();
+          if (alias && alias[k]) k = alias[k].toLowerCase();
+          if (best[k] !== v) { r[field] = best[k]; n++; }
+        });
+        q.fix[field] = n;
+      };
+
+      canon('region', REGALIAS);
+      ['branch', 'brand', 'sm', 'otype'].forEach(f => canon(f));
+
+      [['region','Unspecified','All'], ['brand','Unspecified','All'], ['sm','Unknown','—'], ['otype','Unspecified','—']].forEach(([f, blankLab, absentLab]) => {
+        const key = f === 'otype' ? 'type' : f;
+        if (!has[key]) recs.forEach(r => { r[f] = absentLab; });
+        else {
+          let n = 0;
+          recs.forEach(r => { if (!r[f]) { r[f] = blankLab; n++; } });
+          if (n) q.blank[f] = n;
+        }
+      });
+
+      if (has.outlet) {
+        recs.forEach(r => {
+          if (!r.oid) r.oid = r.oname || '(unknown outlet)';
+          if (!r.oname) r.oname = r.oid;
+        });
+        const nm = {};
+        recs.forEach(r => {
+          const o = nm[r.oid] || (nm[r.oid] = {});
+          o[r.oname] = (o[r.oname] || 0) + 1;
+        });
+        const best = {};
+        Object.keys(nm).forEach(id => {
+          let bv = null, bc = -1;
+          Object.keys(nm[id]).forEach(x => { if (nm[id][x] > bc) { bc = nm[id][x]; bv = x; } });
+          best[id] = bv;
+        });
+        recs.forEach(r => { r.oname = best[r.oid]; });
+        const ids = {};
+        Object.keys(best).forEach(id => { (ids[best[id]] = ids[best[id]] || []).push(id); });
+        q.shared = Object.keys(ids).filter(n => ids[n].length > 1);
       }
 
-      state.salesperson = 'ALL';
-      populateSalespersonSelect();
-      updateHeaderAndResetState();
-      renderAll();
-    }
-
-    function selectTerritory(region) {
-      state.region = region;
-      state.salesperson = 'ALL';
-      document.getElementById('filterRegion').value = region;
-      syncAreaPills();
-      populateSalespersonSelect();
-      updateHeaderAndResetState();
-      renderAll();
-    }
-
-    function syncAreaPills() {
-      document.querySelectorAll('.area-pill').forEach(btn => {
-        const isSelected = btn.getAttribute('data-area') === state.region;
-        btn.className = isSelected
-          ? 'area-pill px-2.5 py-1 rounded-md text-xs font-medium bg-teal-700 text-white'
-          : 'area-pill px-2.5 py-1 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-100';
+      let tMin = Infinity, tMax = -Infinity;
+      const ms = new Set();
+      recs.forEach(r => {
+        if (r.t < tMin) tMin = r.t;
+        if (r.t > tMax) tMax = r.t;
+        ms.add(r.m);
       });
+
+      const totalOutlets = new Set(recs.map(r => r.oid)).size;
+      S = {name: TAB.name, rows: recs, has, q, tMin, tMax, months: [...ms].sort(), totalOutlets};
+      F = {t0: tMin, t1: tMax, month: null, region: null, brand: null, sm: null, type: null};
+      UI.pov = 'director';
+      UI.donutDim = has.brand ? 'brand' : (has.region ? 'region' : 'type');
+      UI.q = '';
+      UI.statusFilter = 'ALL';
+      UI.showAll = false;
+      $('q').value = '';
+      $('tableStatusFilter').value = 'ALL';
+
+      populateFilterControls();
+      try { localStorage.setItem('sales-ledger-last', JSON.stringify({name: TAB.name, text: RAW})); } catch (e) {}
+    }
+
+    function populateFilterControls() {
+      const fillSelect = (selId, wrapId, enabled, rows, field, allText) => {
+        $(wrapId).hidden = !enabled;
+        if (!enabled) return;
+        const items = group(rows, r => r[field]).map(x => x.k);
+        $(selId).innerHTML = `<option value="">${esc(allText)}</option>`
+          + items.map(v => `<option value="${esc(v)}">${esc(v)}</option>`).join('');
+      };
+
+      fillSelect('filterRegion', 'wrapRegion', S.has.region, S.rows, 'region', 'All Regions (National)');
+      fillSelect('filterBrand', 'wrapBrand', S.has.brand, S.rows, 'brand', 'All Brands');
+      fillSelect('filterType', 'wrapType', S.has.type, S.rows, 'otype', 'All Outlet Types');
+
+      // Salespeople scoped to active region
+      populateSalespersonSelect();
+
+      // Period / Month dropdown
+      $('filterMonth').innerHTML = `<option value="">Full Date Range (${S.months.length} mo)</option>`
+        + S.months.map(m => `<option value="${m}">${monthLabel(m, 'en')}</option>`).join('');
+
+      // Territory pills for Sales Manager POV
+      if (S.has.region) {
+        const regs = group(S.rows, r => r.region).map(x => x.k);
+        $('territoryPills').innerHTML = regs.map(rg =>
+          `<button type="button" class="area-pill" data-area="${esc(rg)}">${esc(rg)}</button>`
+        ).join('');
+      }
     }
 
     function populateSalespersonSelect() {
-      const spSelect = document.getElementById('filterSalesperson');
-      const prevVal = state.salesperson;
-      const scopedReps = state.region === 'ALL'
-        ? SALESPEOPLE
-        : SALESPEOPLE.filter(s => s.region === state.region);
-
-      spSelect.innerHTML = `<option value="ALL">All Salespeople (${scopedReps.length})</option>`;
-      scopedReps.forEach(rep => {
-        const opt = document.createElement('option');
-        opt.value = rep.id;
-        opt.textContent = state.region === 'ALL'
-          ? `${rep.name} · ${rep.region}`
-          : `${rep.name} (${rep.territory})`;
-        spSelect.appendChild(opt);
-      });
-
-      if (scopedReps.some(r => r.id === prevVal)) {
-        spSelect.value = prevVal;
+      $('wrapSm').hidden = !S.has.sm;
+      if (!S.has.sm) return;
+      const scopedRows = F.region ? S.rows.filter(r => r.region === F.region) : S.rows;
+      const reps = group(scopedRows, r => r.sm).map(x => x.k);
+      const prev = F.sm;
+      $('filterSalesperson').innerHTML = `<option value="">All Salespeople (${reps.length})</option>`
+        + reps.map(v => `<option value="${esc(v)}">${esc(v)}</option>`).join('');
+      if (prev && reps.includes(prev)) {
+        $('filterSalesperson').value = prev;
       } else {
-        state.salesperson = 'ALL';
-        spSelect.value = 'ALL';
+        F.sm = null;
+        $('filterSalesperson').value = '';
       }
     }
 
-    function onFilterChange() {
-      const prevRegion = state.region;
-      state.region = document.getElementById('filterRegion').value;
-      state.brand = document.getElementById('filterBrand').value;
-      state.salesperson = document.getElementById('filterSalesperson').value;
-      state.period = document.getElementById('filterPeriod').value;
+    /* ---------- Views & Role POV ---------- */
+    function showApp() {
+      $('loaderView').hidden = true;
+      $('mapperView').hidden = true;
+      $('appView').hidden = false;
+      $('headerControls').hidden = false;
+      render();
+    }
 
-      if (prevRegion !== state.region) {
-        state.salesperson = 'ALL';
-        populateSalespersonSelect();
+    function showLoader() {
+      $('appView').hidden = true;
+      $('mapperView').hidden = true;
+      $('loaderView').hidden = false;
+      $('headerControls').hidden = true;
+      $('headerTitle').textContent = 'Sales Performance';
+      $('headerScopeLabel').textContent = 'Load a CSV ledger to begin · Client-side only';
+    }
+
+    function openMapper(auto) {
+      $('mapHelp').textContent = auto
+        ? 'Date or net sales column could not be matched automatically. Select them below; optional columns will hide if unmapped.'
+        : 'Adjust which CSV column maps to each analytical dimension.';
+      $('mapRows').innerHTML = FIELDS.map(f => {
+        const opts = '<option value="-1">(not in this file)</option>'
+          + TAB.head.map((h, i) => `<option value="${i}"${M[f.k] === i ? ' selected' : ''}>${esc(h || 'Column ' + (i + 1))}</option>`).join('');
+        return `<label class="map-field"><span>${esc(f.label)}${f.req ? ' *' : ''}</span><select class="ctrl-select" data-f="${f.k}">${opts}</select></label>`;
+      }).join('');
+      $('mapErr').textContent = '';
+      $('btnCancelMap').hidden = !S;
+      $('loaderView').hidden = true;
+      $('appView').hidden = true;
+      $('mapperView').hidden = false;
+    }
+
+    function switchPOV(pov) {
+      UI.pov = pov;
+      const allOpt = $('filterRegion').querySelector('option[value=""]');
+      if (pov === 'manager') {
+        if (allOpt) { allOpt.hidden = true; allOpt.disabled = true; }
+        if (S.has.region && !F.region) {
+          const topReg = group(S.rows, r => r.region)[0];
+          if (topReg) F.region = topReg.k;
+        }
+        if (UI.donutDim === 'region') UI.donutDim = S.has.brand ? 'brand' : 'type';
+      } else {
+        if (allOpt) { allOpt.hidden = false; allOpt.disabled = false; }
+        F.region = null;
       }
-      if (state.role === 'manager') {
-        syncAreaPills();
-      }
-      updateHeaderAndResetState();
-      renderAll();
+      populateSalespersonSelect();
+      render();
+    }
+
+    /* ---------- Query & Aggregation ---------- */
+    function pass(r, skip, a, b) {
+      return r.t >= a && r.t <= b
+        && (skip.includes('region') || !F.region || r.region === F.region)
+        && (skip.includes('brand') || !F.brand || r.brand === F.brand)
+        && (skip.includes('sm') || !F.sm || r.sm === F.sm)
+        && (skip.includes('type') || !F.type || r.otype === F.type);
+    }
+
+    const sel = (skip = []) => S.rows.filter(r => pass(r, skip, F.t0, F.t1));
+    const selDaily = () => S.rows.filter(r => pass(r, [], -1e9, 1e9));
+
+    function prevInfo() {
+      if (!F.month) return null;
+      const pm = prevMonth(F.month);
+      if (!S.months.includes(pm)) return null;
+      const cr = monthRange(F.month), pr = monthRange(pm);
+      return {m: pm, range: pr, partial: cr[0] < S.tMin || cr[1] > S.tMax || pr[0] < S.tMin || pr[1] > S.tMax};
+    }
+
+    function selPrev(skip = []) {
+      const p = prevInfo();
+      return p ? S.rows.filter(r => pass(r, skip, p.range[0], p.range[1])) : null;
+    }
+
+    const sum = rows => rows.reduce((s, r) => s + r.net, 0);
+
+    function group(rows, keyFn, order = 'desc') {
+      const m = new Map();
+      rows.forEach(r => {
+        const k = keyFn(r);
+        m.set(k, (m.get(k) || 0) + r.net);
+      });
+      return [...m].map(([k, v]) => ({k, v})).sort((a, b) => order === 'asc' ? a.v - b.v : b.v - a.v);
+    }
+
+    function outletAgg(rows) {
+      if (!S.has.outlet) return [];
+      const m = {};
+      rows.forEach(r => {
+        const o = m[r.oid] || (m[r.oid] = {
+          id: r.oid, name: r.oname, branch: r.branch, region: r.region, type: r.otype,
+          sm: r.sm, net: 0, inv: new Set(), n: 0
+        });
+        o.net += r.net;
+        o.n++;
+        if (!r.ret && r.inv) o.inv.add(r.inv);
+      });
+      const arr = Object.values(m);
+      arr.forEach(o => { o.nInv = S.has.inv ? o.inv.size : o.n; });
+
+      const byType = {};
+      arr.forEach(o => (byType[o.type] = byType[o.type] || []).push(o.net));
+      const med = {};
+      Object.keys(byType).forEach(t => { med[t] = median(byType[t]); });
+      arr.forEach(o => { o.rel = med[o.type] > 0 ? o.net / med[o.type] : 0; });
+      return arr;
+    }
+
+    function setMonth(m) {
+      if (!m) { F.month = null; F.t0 = S.tMin; F.t1 = S.tMax; return; }
+      const r = monthRange(m);
+      F.month = m;
+      F.t0 = Math.max(r[0], S.tMin);
+      F.t1 = Math.min(r[1], S.tMax);
     }
 
     function resetFilters() {
-      state.region = state.role === 'manager' ? 'Jakarta' : 'ALL';
-      state.brand = 'ALL';
-      state.salesperson = 'ALL';
-      state.period = 'MTD';
-
-      document.getElementById('filterRegion').value = state.region;
-      document.getElementById('filterBrand').value = 'ALL';
-      document.getElementById('filterPeriod').value = 'MTD';
-      document.getElementById('tableSearch').value = '';
-      document.getElementById('tableStatusFilter').value = 'ALL';
-
-      if (state.role === 'manager') {
-        syncAreaPills();
+      F.t0 = S.tMin;
+      F.t1 = S.tMax;
+      F.month = null;
+      if (UI.pov === 'manager' && S.has.region) {
+        const topReg = group(S.rows, r => r.region)[0];
+        F.region = topReg ? topReg.k : null;
+      } else {
+        F.region = null;
       }
+      F.brand = null;
+      F.sm = null;
+      F.type = null;
+      UI.q = '';
+      UI.statusFilter = 'ALL';
+      $('q').value = '';
+      $('tableStatusFilter').value = 'ALL';
       populateSalespersonSelect();
-      updateHeaderAndResetState();
-      renderAll();
+      render();
     }
 
-    function updateHeaderAndResetState() {
-      const scopeEl = document.getElementById('headerScopeLabel');
-      const regionText = state.region === 'ALL' ? 'All Regions' : `${state.region} Territory`;
-      const povText = state.role === 'director' ? 'National Helicopter View' : 'Area Operational View';
-      const periodText = PERIOD_CONFIG[state.period].label;
-      scopeEl.textContent = `${povText} · ${regionText} · ${periodText}`;
-
-      const defaultRegion = state.role === 'manager' ? 'Jakarta' : 'ALL';
-      const isDirty =
-        state.region !== defaultRegion ||
-        state.brand !== 'ALL' ||
-        state.salesperson !== 'ALL' ||
-        state.period !== 'MTD';
-
-      const resetBtn = document.getElementById('btnResetFilters');
-      if (isDirty) {
-        resetBtn.classList.remove('hidden');
-      } else {
-        resetBtn.classList.add('hidden');
-      }
+    /* ---------- Main Render Orchestrator ---------- */
+    function render() {
+      if (!S) return;
+      renderHeader();
+      renderFilterStrip();
+      renderKPIs();
+      renderPrimaryBarChart();
+      renderDonutCard();
+      renderStrip();
+      renderOperationalRankings();
+      renderMatrix();
+      renderLedger();
+      renderSummary();
+      renderDQ();
     }
 
-    /**
-     * =========================================================================
-     * 5. DATA AGGREGATION ENGINE
-     * =========================================================================
-     */
-    function getFilteredLedger() {
-      const mult = PERIOD_CONFIG[state.period].mult;
-      return LEDGER_RECORDS
-        .filter(r => state.region === 'ALL' || r.region === state.region)
-        .filter(r => state.brand === 'ALL' || r.brand === state.brand)
-        .filter(r => state.salesperson === 'ALL' || r.spId === state.salesperson)
-        .map(r => {
-          const sp = getSalespersonById(r.spId);
-          const actual = r.actual * mult;
-          const target = r.target * mult;
-          const orders = Math.round(r.orders * mult);
-          const attainment = target > 0 ? (actual / target) * 100 : 0;
-          return {
-            ...r,
-            salespersonName: sp.name,
-            territory: sp.territory,
-            actual,
-            target,
-            orders,
-            attainment
-          };
+    function renderHeader() {
+      const isMgr = UI.pov === 'manager';
+      $('btnRoleDirector').classList.toggle('active', !isMgr);
+      $('btnRoleDirector').setAttribute('aria-pressed', !isMgr);
+      $('btnRoleManager').classList.toggle('active', isMgr);
+      $('btnRoleManager').setAttribute('aria-pressed', isMgr);
+
+      const povName = isMgr ? 'Area Operational View' : 'National Helicopter View';
+      const areaName = F.region ? `${F.region} Territory` : 'All Regions';
+      const dateSpan = F.month ? monthLabel(F.month, 'en') : `${dShort(F.t0)} – ${dfmt(F.t1, 'en')}`;
+      $('headerTitle').textContent = 'Sales Performance';
+      $('headerScopeLabel').textContent = `${povName} · ${areaName} · ${dateSpan} (${S.name})`;
+    }
+
+    function renderFilterStrip() {
+      const isMgr = UI.pov === 'manager';
+      $('managerAreaBar').hidden = !(isMgr && S.has.region);
+      if (isMgr && S.has.region) {
+        document.querySelectorAll('.area-pill').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.area === F.region);
         });
+      }
+
+      $('filterRegion').value = F.region || '';
+      $('filterBrand').value = F.brand || '';
+      $('filterSalesperson').value = F.sm || '';
+      $('filterType').value = F.type || '';
+      $('filterMonth').value = F.month || '';
+
+      const defaultReg = isMgr && S.has.region ? (group(S.rows, r => r.region)[0]?.k || null) : null;
+      const isDirty = F.region !== defaultReg || F.brand || F.sm || F.type || F.month || F.t0 !== S.tMin || F.t1 !== S.tMax;
+      $('btnResetFilters').hidden = !isDirty;
+
+      const chips = [];
+      if (F.month) chips.push(['month', 'Period: ' + monthLabel(F.month, 'en')]);
+      else if (F.t0 !== S.tMin || F.t1 !== S.tMax) chips.push(['range', dShort(F.t0) + ' – ' + dShort(F.t1)]);
+      Object.keys(DIMLABEL).forEach(k => {
+        if (F[k] && !(isMgr && k === 'region')) {
+          chips.push([k, DIMLABEL[k] + ': ' + F[k]]);
+        }
+      });
+
+      const bar = $('activeChips');
+      bar.hidden = !chips.length;
+      bar.innerHTML = chips.map(([k, label]) =>
+        `<button type="button" class="filter-tag" data-clear="${k}">${esc(label)} <span aria-hidden="true">×</span></button>`
+      ).join('');
     }
 
-    /**
-     * =========================================================================
-     * 6. RENDERING: KPI STRIP
-     * =========================================================================
-     */
-    function renderKPIs(rows) {
-      const totalActual = rows.reduce((s, r) => s + r.actual, 0);
-      const totalQuota = rows.reduce((s, r) => s + r.target, 0);
-      const totalOrders = rows.reduce((s, r) => s + r.orders, 0);
-      const outletCount = rows.length;
-      const attainmentPct = totalQuota > 0 ? (totalActual / totalQuota) * 100 : 0;
-      const avgPerOutlet = outletCount > 0 ? totalActual / outletCount : 0;
+    function renderKPIs() {
+      const rows = sel();
+      const tot = sum(rows);
+      const live = rows.filter(r => !r.ret);
+      const invCount = new Set(live.map(r => r.inv || 'L' + r.line)).size;
+      const retV = rows.reduce((s, r) => r.ret ? s + r.net : s, 0);
+      const activeOuts = new Set(rows.map(r => r.oid)).size;
+      const daysCount = Math.max(1, F.t1 - F.t0 + 1);
 
-      document.getElementById('kpiRevenue').textContent = formatIDRCompact(totalActual);
-      document.getElementById('kpiQuota').textContent = formatIDRCompact(totalQuota);
-      document.getElementById('kpiRevDelta').textContent = PERIOD_CONFIG[state.period].delta;
+      // Metric 1: Net Sales
+      $('kpiRevenue').textContent = rpCompact(tot);
+      $('kpiRevenue').title = rpExact(tot);
+      const p = prevInfo();
+      const deltaBadge = $('kpiRevDelta');
+      if (p) {
+        const pt = sum(selPrev());
+        if (pt) {
+          const ch = (tot - pt) / Math.abs(pt) * 100;
+          deltaBadge.textContent = `${ch >= 0 ? '+' : '−'}${Math.abs(ch).toFixed(1)}% vs ${monthLabel(p.m, 'en')}`;
+          deltaBadge.className = `badge tabular ${ch >= 0 ? 'emerald' : 'red'}`;
+        } else {
+          deltaBadge.textContent = 'No prior month';
+          deltaBadge.className = 'badge neutral tabular';
+        }
+      } else {
+        deltaBadge.textContent = `${daysCount} days`;
+        deltaBadge.className = 'badge neutral tabular';
+      }
 
-      document.getElementById('kpiAttainment').textContent = attainmentPct.toFixed(1) + '%';
-      const status = getStatusMeta(attainmentPct);
-      const statusBadge = document.getElementById('kpiAttainStatus');
-      statusBadge.textContent = status.label;
-      statusBadge.className = `text-[11px] font-semibold px-1.5 py-0.5 rounded border ${status.pillClass}`;
+      if (S.q.returns) {
+        $('kpiRevSub').innerHTML = `Returns netted out: <strong>${rpCompact(Math.abs(retV))}</strong>`;
+      } else {
+        $('kpiRevSub').innerHTML = `Order lines: <strong>${int(rows.length)}</strong>`;
+      }
 
-      const bar = document.getElementById('kpiAttainBar');
-      bar.style.width = `${Math.min(100, attainmentPct)}%`;
-      bar.style.backgroundColor = status.barColor;
+      // Metric 2: Invoices & Avg Ticket
+      $('kpiInvTitle').textContent = S.has.inv ? 'Invoices & Velocity' : 'Order Lines & Velocity';
+      $('kpiInvoices').textContent = int(invCount);
+      const avgInv = invCount > 0 ? sum(live) / invCount : 0;
+      $('kpiAvgInvBadge').textContent = `Avg ${rpCompact(avgInv)}`;
+      $('kpiInvSub').innerHTML = `Daily run-rate: <strong>${rpCompact(tot / daysCount)}/day</strong>`;
 
-      document.getElementById('kpiOutlets').textContent = outletCount.toString();
-      document.getElementById('kpiOutletVelocity').textContent = `${totalOrders.toLocaleString('en-US')} orders`;
-      document.getElementById('kpiAvgOutlet').textContent = formatIDRCompact(avgPerOutlet);
+      // Metric 3: Active Outlets
+      $('kpiOutlets').textContent = S.has.outlet ? int(activeOuts) : int(rows.length);
+      const avgOut = activeOuts > 0 ? tot / activeOuts : 0;
+      $('kpiAvgOutBadge').textContent = S.has.outlet ? `Avg ${rpCompact(avgOut)} / outlet` : 'Active rows';
+      const covPct = S.totalOutlets > 0 ? Math.min(100, (activeOuts / S.totalOutlets) * 100) : 0;
+      $('kpiOutletCoverageBar').style.width = covPct.toFixed(1) + '%';
 
-      // Dynamic Top Entity KPI: Top Region in Director POV vs Top Salesperson in Manager POV
-      const labelEl = document.getElementById('kpiTopEntityLabel');
-      const nameEl = document.getElementById('kpiTopEntityName');
-      const pctEl = document.getElementById('kpiTopEntityPct');
-      const revEl = document.getElementById('kpiTopEntityRev');
+      // Metric 4: Top Performing Entity (Dynamic per POV)
+      const labelEl = $('kpiTopEntityLabel');
+      const nameEl = $('kpiTopEntityName');
+      const pctEl = $('kpiTopEntityPct');
+      const revEl = $('kpiTopEntityRev');
 
-      if (state.role === 'director' && state.region === 'ALL') {
+      if (UI.pov === 'director' && !F.region && S.has.region) {
         labelEl.textContent = 'Top Performing Region';
-        const byRegion = {};
-        rows.forEach(r => {
-          if (!byRegion[r.region]) byRegion[r.region] = { name: r.region, actual: 0, target: 0 };
-          byRegion[r.region].actual += r.actual;
-          byRegion[r.region].target += r.target;
-        });
-        const rankedRegions = Object.values(byRegion)
-          .map(x => ({ ...x, pct: x.target > 0 ? (x.actual / x.target) * 100 : 0 }))
-          .sort((a, b) => b.pct - a.pct);
-
-        if (rankedRegions.length > 0) {
-          nameEl.textContent = rankedRegions[0].name;
-          pctEl.textContent = rankedRegions[0].pct.toFixed(1) + '%';
-          revEl.textContent = formatIDRCompact(rankedRegions[0].actual);
+        const top = group(rows, r => r.region)[0];
+        if (top && tot > 0) {
+          nameEl.textContent = top.k;
+          pctEl.textContent = (top.v / tot * 100).toFixed(1) + '% share';
+          revEl.textContent = rpCompact(top.v);
+        } else {
+          nameEl.textContent = '—';
+          pctEl.textContent = '0.0%';
+          revEl.textContent = 'Rp 0';
+        }
+      } else if (S.has.sm) {
+        labelEl.textContent = 'Top Salesperson in Scope';
+        const top = group(rows, r => r.sm)[0];
+        if (top && tot > 0) {
+          nameEl.textContent = top.k;
+          pctEl.textContent = (top.v / tot * 100).toFixed(1) + '% share';
+          revEl.textContent = rpCompact(top.v);
         } else {
           nameEl.textContent = '—';
           pctEl.textContent = '0.0%';
           revEl.textContent = 'Rp 0';
         }
       } else {
-        labelEl.textContent = 'Top Salesperson in Scope';
-        const bySp = {};
-        rows.forEach(r => {
-          if (!bySp[r.spId]) bySp[r.spId] = { name: r.salespersonName, actual: 0, target: 0 };
-          bySp[r.spId].actual += r.actual;
-          bySp[r.spId].target += r.target;
-        });
-        const rankedSp = Object.values(bySp)
-          .map(x => ({ ...x, pct: x.target > 0 ? (x.actual / x.target) * 100 : 0 }))
-          .sort((a, b) => b.pct - a.pct);
-
-        if (rankedSp.length > 0) {
-          nameEl.textContent = rankedSp[0].name;
-          pctEl.textContent = rankedSp[0].pct.toFixed(1) + '%';
-          revEl.textContent = formatIDRCompact(rankedSp[0].actual);
+        labelEl.textContent = 'Top Brand in Scope';
+        const top = group(rows, r => r.brand)[0];
+        if (top && tot > 0) {
+          nameEl.textContent = top.k;
+          pctEl.textContent = (top.v / tot * 100).toFixed(1) + '% share';
+          revEl.textContent = rpCompact(top.v);
         } else {
           nameEl.textContent = '—';
           pctEl.textContent = '0.0%';
@@ -841,305 +2357,345 @@
       }
     }
 
-    /**
-     * =========================================================================
-     * 7. RENDERING: PRECISION SVG CHARTS (BAR + DONUT)
-     * =========================================================================
-     */
-    function renderPrimaryBarChart(rows) {
-      const container = document.getElementById('primarySvgChartContainer');
-      const titleEl = document.getElementById('primaryChartTitle');
-      const subEl = document.getElementById('primaryChartSub');
+    function renderPrimaryBarChart() {
+      const container = $('primarySvgChartContainer');
+      const titleEl = $('primaryChartTitle');
+      const subEl = $('primaryChartSub');
 
-      let groups = [];
-      if (state.role === 'director' && state.region === 'ALL') {
-        titleEl.textContent = 'Revenue vs. Quota by Region';
-        subEl.textContent = 'Cross-territory comparison of actual sales against target quota';
-        REGIONS.forEach(reg => {
-          const subRows = rows.filter(r => r.region === reg);
-          const actual = subRows.reduce((s, r) => s + r.actual, 0);
-          const target = subRows.reduce((s, r) => s + r.target, 0);
-          if (actual > 0 || target > 0) {
-            groups.push({ label: reg, actual, target });
-          }
-        });
+      let dim = 'region';
+      if (UI.pov === 'manager' || (F.region && S.has.sm)) {
+        dim = S.has.sm ? 'sm' : (S.has.brand ? 'brand' : 'type');
+        titleEl.textContent = `Salesperson Performance · ${F.region || 'Selected Scope'}`;
+        subEl.textContent = 'Net sales by individual salesperson (click a bar to filter)';
+      } else if (S.has.region) {
+        dim = 'region';
+        titleEl.textContent = 'Net Sales by Region';
+        subEl.textContent = 'Cross-territory net sales comparison (click any bar to filter)';
       } else {
-        const areaName = state.region === 'ALL' ? 'Selected Scope' : state.region;
-        titleEl.textContent = `Individual Salesperson Achievement · ${areaName}`;
-        subEl.textContent = 'Actual revenue vs. assigned quota per individual rep';
-        const scopedReps = state.region === 'ALL'
-          ? SALESPEOPLE
-          : SALESPEOPLE.filter(s => s.region === state.region);
-
-        scopedReps.forEach(rep => {
-          const subRows = rows.filter(r => r.spId === rep.id);
-          const actual = subRows.reduce((s, r) => s + r.actual, 0);
-          const target = subRows.reduce((s, r) => s + r.target, 0);
-          if (actual > 0 || target > 0) {
-            groups.push({ label: rep.name.split(' ')[0], fullLabel: rep.name, actual, target });
-          }
-        });
+        dim = S.has.brand ? 'brand' : 'type';
+        titleEl.textContent = 'Net Sales Breakdown';
+        subEl.textContent = 'Click any bar to filter';
       }
 
-      if (groups.length === 0) {
-        container.innerHTML = `<div class="h-52 flex items-center justify-center text-xs text-slate-400">No data available for current filter selection.</div>`;
+      const field = DIMFIELD[dim];
+      const rows = sel([dim]);
+      const groups = group(rows, r => r[field], 'desc').slice(0, 10);
+      const totalScope = groups.reduce((s, g) => s + Math.max(0, g.v), 0);
+
+      if (!groups.length) {
+        container.innerHTML = '<div class="empty-state">No records match the active filters.</div>';
         return;
       }
 
-      const maxVal = Math.max(...groups.map(g => Math.max(g.actual, g.target))) * 1.15;
-      const svgWidth = 640;
-      const svgHeight = 230;
-      const padLeft = 58;
-      const padRight = 16;
-      const padTop = 18;
-      const padBottom = 34;
-      const plotW = svgWidth - padLeft - padRight;
-      const plotH = svgHeight - padTop - padBottom;
+      const maxVal = Math.max(...groups.map(g => Math.max(0, g.v)), 1) * 1.15;
+      const svgW = 680, svgH = 228;
+      const padL = 62, padR = 16, padT = 20, padB = 34;
+      const plotW = svgW - padL - padR, plotH = svgH - padT - padB;
 
-      // 4 Horizontal gridlines
       let gridHtml = '';
       for (let i = 0; i <= 4; i++) {
-        const y = padTop + (plotH * i) / 4;
+        const y = padT + (plotH * i) / 4;
         const val = maxVal * (1 - i / 4);
         gridHtml += `
-          <line x1="${padLeft}" y1="${y}" x2="${svgWidth - padRight}" y2="${y}" stroke="#F1F5F9" stroke-width="1" />
-          <text x="${padLeft - 8}" y="${y + 3.5}" text-anchor="end" fill="#64748B" font-size="10" class="tabular">${formatIDRCompact(val)}</text>
+          <line x1="${padL}" y1="${y}" x2="${svgW - padR}" y2="${y}" stroke="#F1F5F9" stroke-width="1" />
+          <text x="${padL - 8}" y="${y + 3.5}" text-anchor="end" fill="#64748B" font-size="10" class="tabular">${rpCompact(val)}</text>
         `;
       }
 
-      // Grouped bars
       const slotW = plotW / groups.length;
-      const barW = Math.min(26, slotW * 0.28);
+      const barW = Math.min(38, slotW * 0.52);
       let barsHtml = '';
 
       groups.forEach((g, idx) => {
-        const centerX = padLeft + slotW * idx + slotW / 2;
-        const actualH = maxVal > 0 ? (g.actual / maxVal) * plotH : 0;
-        const targetH = maxVal > 0 ? (g.target / maxVal) * plotH : 0;
-        const actualY = padTop + plotH - actualH;
-        const targetY = padTop + plotH - targetH;
-        const pct = g.target > 0 ? ((g.actual / g.target) * 100).toFixed(0) : 0;
+        const cx = padL + slotW * idx + slotW / 2;
+        const val = Math.max(0, g.v);
+        const bh = (val / maxVal) * plotH;
+        const by = padT + plotH - bh;
+        const share = totalScope > 0 ? ((val / totalScope) * 100).toFixed(0) : 0;
+        const isSelected = F[dim] === g.k;
+        const isDimmed = F[dim] && !isSelected;
+        const fill = isDimmed ? '#CBD5E1' : '#0F766E';
+        const shortLab = g.k.length > 12 ? g.k.slice(0, 11) + '…' : g.k;
 
         barsHtml += `
-          <g>
-            <!-- Actual Bar -->
-            <rect x="${centerX - barW - 2}" y="${actualY}" width="${barW}" height="${Math.max(1, actualH)}" rx="3" fill="#0F766E">
-              <title>${g.fullLabel || g.label} Actual: ${formatIDRExact(g.actual)}</title>
+          <g style="cursor:pointer" data-dim="${dim}" data-val="${esc(g.k)}">
+            <rect x="${cx - slotW / 2 + 2}" y="${padT}" width="${slotW - 4}" height="${plotH + 24}" fill="transparent" />
+            <rect x="${cx - barW / 2}" y="${by}" width="${barW}" height="${Math.max(2, bh)}" rx="3" fill="${fill}">
+              <title>${esc(g.k)}: ${rpExact(g.v)} (${share}%)</title>
             </rect>
-            <!-- Target Bar -->
-            <rect x="${centerX + 2}" y="${targetY}" width="${barW}" height="${Math.max(1, targetH)}" rx="3" fill="#E2E8F0">
-              <title>${g.fullLabel || g.label} Quota: ${formatIDRExact(g.target)}</title>
-            </rect>
-            <!-- Attainment % micro-label above bars -->
-            <text x="${centerX}" y="${Math.min(actualY, targetY) - 5}" text-anchor="middle" fill="#334155" font-size="10" font-weight="600" class="tabular">${pct}%</text>
-            <!-- Category Label -->
-            <text x="${centerX}" y="${svgHeight - 10}" text-anchor="middle" fill="#475569" font-size="11" font-weight="500">${g.label}</text>
+            <text x="${cx}" y="${by - 6}" text-anchor="middle" fill="#334155" font-size="10" font-weight="600" class="tabular">${share}%</text>
+            <text x="${cx}" y="${svgH - 10}" text-anchor="middle" fill="${isSelected ? '#0F766E' : '#475569'}" font-size="11" font-weight="${isSelected ? '700' : '500'}">${esc(shortLab)}</text>
           </g>
         `;
       });
 
       container.innerHTML = `
-        <svg viewBox="0 0 ${svgWidth} ${svgHeight}" class="w-full h-auto min-w-[460px]" role="img" aria-label="Revenue vs Target Chart">
+        <svg viewBox="0 0 ${svgW} ${svgH}" style="width:100%;height:auto;min-width:460px;display:block;" role="img" aria-label="Net Sales Comparison Chart">
           ${gridHtml}
-          <line x1="${padLeft}" y1="${padTop + plotH}" x2="${svgWidth - padRight}" y2="${padTop + plotH}" stroke="#CBD5E1" stroke-width="1" />
+          <line x1="${padL}" y1="${padT + plotH}" x2="${svgW - padR}" y2="${padT + plotH}" stroke="#CBD5E1" stroke-width="1" />
           ${barsHtml}
         </svg>
       `;
     }
 
-    function renderBrandDonut(rows) {
-      const donutEl = document.getElementById('brandDonutContainer');
-      const legendEl = document.getElementById('brandLegendTable');
+    function renderDonutCard() {
+      const avail = [];
+      if (S.has.brand) avail.push(['brand', 'Brand']);
+      if (S.has.type) avail.push(['type', 'Outlet Type']);
+      if (S.has.region && UI.pov === 'director') avail.push(['region', 'Region']);
 
-      const totalActual = rows.reduce((s, r) => s + r.actual, 0);
-      const brandStats = BRANDS.map(b => {
-        const sub = rows.filter(r => r.brand === b.name);
-        const actual = sub.reduce((s, r) => s + r.actual, 0);
-        const target = sub.reduce((s, r) => s + r.target, 0);
-        const share = totalActual > 0 ? (actual / totalActual) * 100 : 0;
-        const attainment = target > 0 ? (actual / target) * 100 : 0;
-        return { ...b, actual, target, share, attainment };
-      }).filter(b => b.actual > 0 || state.brand === 'ALL');
+      const card = $('donutCard');
+      if (!avail.length) { card.hidden = true; return; }
+      card.hidden = false;
+      if (!avail.some(x => x[0] === UI.donutDim)) UI.donutDim = avail[0][0];
 
-      // SVG Donut
-      const size = 160;
-      const strokeW = 20;
-      const radius = (size - strokeW) / 2;
-      const circumference = 2 * Math.PI * radius;
-      let cumulativePct = 0;
+      $('donutDimSwitch').innerHTML = avail.length > 1
+        ? avail.map(([k, lab]) => `<button type="button" class="mini-pill ${UI.donutDim === k ? 'active' : ''}" data-donut="${k}">${lab}</button>`).join('')
+        : '';
 
-      const segments = brandStats.map(b => {
-        const dash = (b.share / 100) * circumference;
-        const offset = -((cumulativePct / 100) * circumference);
-        cumulativePct += b.share;
+      const dim = UI.donutDim;
+      const field = DIMFIELD[dim];
+      const titleMap = {brand: 'Brand Contribution & Share', type: 'Outlet Type Mix', region: 'Regional Contribution'};
+      $('donutTitle').textContent = titleMap[dim] || 'Sales Mix';
+
+      const rows = sel([dim]);
+      const all = group(rows, r => r[field], 'desc').filter(x => x.v > 0);
+      const posTot = all.reduce((s, x) => s + x.v, 0);
+
+      const donutEl = $('brandDonutContainer');
+      const legendEl = $('brandLegendTable');
+
+      const size = 160, strokeW = 20, r = (size - strokeW) / 2, C = 2 * Math.PI * r;
+      if (!all.length || posTot <= 0) {
+        donutEl.innerHTML = `
+          <svg viewBox="0 0 ${size} ${size}" style="width:100%;height:100%;">
+            <circle cx="80" cy="80" r="${r}" fill="transparent" stroke="#F1F5F9" stroke-width="${strokeW}" />
+            <text x="50%" y="52%" text-anchor="middle" fill="#64748B" font-size="11">No positive data</text>
+          </svg>
+        `;
+        legendEl.innerHTML = '<div class="empty-state">No positive sales in current filter scope.</div>';
+        return;
+      }
+
+      const slices = all.slice(0, 5);
+      if (all.length > 5) {
+        slices.push({k: 'Others', v: all.slice(5).reduce((s, x) => s + x.v, 0), other: true});
+      }
+
+      let cum = 0;
+      const arcs = slices.map((s, i) => {
+        const share = (s.v / posTot) * 100;
+        const dash = (share / 100) * C;
+        const offset = -((cum / 100) * C);
+        cum += share;
+        const color = s.other ? OTHER_COLOR : BRAND_COLORS[i % BRAND_COLORS.length];
+        const dimmed = Boolean(F[dim] && F[dim] !== s.k);
+        const clickAttrs = s.other ? '' : `style="cursor:pointer" data-dim="${dim}" data-val="${esc(s.k)}"`;
         return `
-          <circle
-            cx="${size / 2}"
-            cy="${size / 2}"
-            r="${radius}"
-            fill="transparent"
-            stroke="${b.color}"
-            stroke-width="${strokeW}"
-            stroke-dasharray="${dash} ${circumference}"
-            stroke-dashoffset="${offset}"
-            transform="rotate(-90 ${size / 2} ${size / 2})"
-          >
-            <title>${b.name}: ${formatIDRExact(b.actual)} (${b.share.toFixed(1)}%)</title>
+          <circle cx="80" cy="80" r="${r}" fill="transparent" stroke="${color}" stroke-width="${strokeW}"
+            opacity="${dimmed ? 0.25 : 1}" stroke-dasharray="${dash.toFixed(2)} ${C.toFixed(2)}"
+            stroke-dashoffset="${offset.toFixed(2)}" transform="rotate(-90 80 80)" ${clickAttrs}>
+            <title>${esc(s.k)}: ${rpExact(s.v)} (${share.toFixed(1)}%)</title>
           </circle>
         `;
       }).join('');
 
+      const activeVal = F[dim];
+      const topLab = activeVal ? (activeVal.length > 13 ? activeVal.slice(0, 12) + '…' : activeVal) : 'Total Mix';
+      const botLab = activeVal ? rpCompact(sum(sel())) : rpCompact(posTot);
+
       donutEl.innerHTML = `
-        <svg viewBox="0 0 ${size} ${size}" class="w-full h-full">
-          <circle cx="${size / 2}" cy="${size / 2}" r="${radius}" fill="transparent" stroke="#F1F5F9" stroke-width="${strokeW}" />
-          ${segments}
-          <text x="50%" y="47%" text-anchor="middle" fill="#64748B" font-size="10" font-weight="500">Total Mix</text>
-          <text x="50%" y="60%" text-anchor="middle" fill="#0F172A" font-size="12" font-weight="700" class="tabular">${formatIDRCompact(totalActual)}</text>
+        <svg viewBox="0 0 ${size} ${size}" style="width:100%;height:100%;">
+          <circle cx="80" cy="80" r="${r}" fill="transparent" stroke="#F1F5F9" stroke-width="${strokeW}" />
+          ${arcs}
+          <text x="50%" y="46%" text-anchor="middle" fill="#64748B" font-size="10" font-weight="500">${esc(topLab)}</text>
+          <text x="50%" y="60%" text-anchor="middle" fill="#0F172A" font-size="12" font-weight="700" class="tabular">${esc(botLab)}</text>
         </svg>
       `;
 
-      // Tabular Legend
-      legendEl.innerHTML = brandStats.map(b => {
-        const st = getStatusMeta(b.attainment);
+      legendEl.innerHTML = slices.map((s, i) => {
+        const color = s.other ? OTHER_COLOR : BRAND_COLORS[i % BRAND_COLORS.length];
+        const sharePct = (s.v / posTot * 100).toFixed(0);
+        const on = !s.other && F[dim] === s.k;
+        const dimmed = Boolean(F[dim] && F[dim] !== s.k);
+        const rowStyle = dimmed ? 'style="opacity:0.45;"' : '';
+        const attrs = s.other
+          ? `class="donut-row static" ${rowStyle}`
+          : `class="donut-row ${on ? 'active' : ''}" data-dim="${dim}" data-val="${esc(s.k)}" ${rowStyle}`;
         return `
-          <div class="py-2 flex items-center justify-between gap-2 text-xs">
-            <div class="flex items-center gap-2 min-w-0">
-              <span class="w-2.5 h-2.5 rounded-xs shrink-0" style="background-color: ${b.color}"></span>
-              <span class="font-medium text-slate-800 truncate">${b.name}</span>
+          <div ${attrs}>
+            <div class="donut-row-left">
+              <span class="swatch-dot" style="background:${color};margin-right:0;flex-shrink:0;"></span>
+              <span class="donut-name" title="${esc(s.k)}">${esc(s.k)}</span>
             </div>
-            <div class="flex items-center gap-3 shrink-0 tabular">
-              <span class="text-slate-500">${b.share.toFixed(0)}%</span>
-              <span class="font-semibold text-slate-900 w-16 text-right">${formatIDRCompact(b.actual)}</span>
-              <span class="font-semibold ${st.textClass} w-12 text-right">${b.attainment.toFixed(0)}%</span>
+            <div class="donut-row-right tabular">
+              <span style="color:var(--muted);">${sharePct}%</span>
+              <span style="font-weight:600;color:var(--ink);width:68px;text-align:right;">${rpCompact(s.v)}</span>
             </div>
           </div>
         `;
       }).join('');
     }
 
-    /**
-     * =========================================================================
-     * 8. RENDERING: TOP VS LOWEST OPERATIONAL RANKINGS
-     * =========================================================================
-     */
-    function setRankingDirection(dir) {
-      state.rankDirection = dir;
-      const btnTop = document.getElementById('btnRankTop');
-      const btnLow = document.getElementById('btnRankLowest');
+    function renderStrip() {
+      const days = S.tMax - S.tMin + 1;
+      const tot = new Array(days).fill(0);
+      selDaily().forEach(r => { tot[r.t - S.tMin] += r.net; });
 
-      if (dir === 'top') {
-        btnTop.className = 'px-2.5 py-1 rounded text-xs font-medium transition-colors bg-white text-slate-900 border border-slate-200/80';
-        btnLow.className = 'px-2.5 py-1 rounded text-xs font-medium transition-colors text-slate-600 hover:text-slate-900';
-      } else {
-        btnLow.className = 'px-2.5 py-1 rounded text-xs font-medium transition-colors bg-white text-red-700 border border-slate-200/80';
-        btnTop.className = 'px-2.5 py-1 rounded text-xs font-medium transition-colors text-slate-600 hover:text-slate-900';
-      }
-      renderOperationalRankings(getFilteredLedger());
-    }
+      const W = 1000, H = 108, pt = 8, pb = 6, ph = H - pt - pb, bw = W / days;
+      let mx = 1;
+      tot.forEach(v => { if (v > mx) mx = v; });
 
-    function setRankingCategory(cat) {
-      state.rankCategory = cat;
-      const tabs = {
-        outlets: document.getElementById('tabRankOutlets'),
-        brands: document.getElementById('tabRankBrands'),
-        salespeople: document.getElementById('tabRankSalespeople')
-      };
-
-      Object.entries(tabs).forEach(([key, el]) => {
-        if (key === cat) {
-          el.className = 'py-2.5 text-xs font-semibold border-b-2 border-teal-700 text-teal-800 transition-colors';
-        } else {
-          el.className = 'py-2.5 text-xs font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition-colors';
+      let h = '';
+      for (let i = 0; i < days; i++) {
+        const t = S.tMin + i, v = Math.max(0, tot[i]), bh = v / mx * ph, inR = t >= F.t0 && t <= F.t1;
+        h += `<rect class="${inR ? 'in' : 'out'}" x="${(i * bw + 0.5).toFixed(1)}" y="${(pt + ph - bh).toFixed(1)}" width="${Math.max(1, bw - 1).toFixed(1)}" height="${(v > 0 ? Math.max(1, bh) : 0).toFixed(1)}" />`;
+        if (i > 0 && new Date(t * 864e5).getUTCDate() === 1) {
+          h += `<line class="mline" x1="${(i * bw).toFixed(1)}" x2="${(i * bw).toFixed(1)}" y1="0" y2="${pt + ph}" />`;
         }
-      });
-      renderOperationalRankings(getFilteredLedger());
+      }
+      h += `<line class="base" x1="0" x2="${W}" y1="${pt + ph}" y2="${pt + ph}" />`;
+      const x0 = (F.t0 - S.tMin) * bw, x1 = (F.t1 - S.tMin + 1) * bw;
+      if (F.t0 !== S.tMin || F.t1 !== S.tMax) {
+        h += `<line class="edge" x1="${x0.toFixed(1)}" x2="${x0.toFixed(1)}" y1="0" y2="${pt + ph}" />`;
+        h += `<line class="edge" x1="${x1.toFixed(1)}" x2="${x1.toFixed(1)}" y1="0" y2="${pt + ph}" />`;
+      }
+
+      $('strip').innerHTML = h;
+      $('axL').textContent = dfmt(S.tMin, 'en');
+      $('axR').textContent = dfmt(S.tMax, 'en');
+      const full = F.t0 === S.tMin && F.t1 === S.tMax;
+      $('stripNote').textContent = full
+        ? 'Drag across bars to isolate a custom date window'
+        : `${F.t1 - F.t0 + 1} days selected (${dShort(F.t0)} – ${dShort(F.t1)})`;
+
+      const a = $('dFrom'), b = $('dTo');
+      a.min = b.min = tToStr(S.tMin);
+      a.max = b.max = tToStr(S.tMax);
+      a.value = tToStr(F.t0);
+      b.value = tToStr(F.t1);
     }
 
-    function renderOperationalRankings(rows) {
-      const subEl = document.getElementById('rankingContextSub');
-      const listEl = document.getElementById('rankingRowsList');
-      const countMetaEl = document.getElementById('rankingCountMeta');
+    function renderOperationalRankings() {
+      const isTop = UI.rankDir === 'top';
+      $('btnRankTop').className = isTop ? 'seg-btn active' : 'seg-btn';
+      $('btnRankLowest').className = !isTop ? 'seg-btn active-danger' : 'seg-btn';
 
-      const scopeText = state.region === 'ALL' ? 'All Regions' : `${state.region} Territory`;
-      subEl.textContent = `Scoped to ${scopeText}`;
+      $('tabRankOutlets').hidden = !S.has.outlet;
+      $('tabRankBrands').hidden = !S.has.brand;
+      $('tabRankSalespeople').hidden = !S.has.sm;
 
+      if (UI.rankCat === 'outlets' && !S.has.outlet) UI.rankCat = S.has.brand ? 'brands' : 'salespeople';
+      if (UI.rankCat === 'brands' && !S.has.brand) UI.rankCat = S.has.sm ? 'salespeople' : 'outlets';
+      if (UI.rankCat === 'salespeople' && !S.has.sm) UI.rankCat = S.has.outlet ? 'outlets' : 'brands';
+
+      ['outlets', 'brands', 'salespeople'].forEach(cat => {
+        const tab = $('tabRank' + cat.charAt(0).toUpperCase() + cat.slice(1));
+        if (tab) tab.classList.toggle('active', UI.rankCat === cat);
+      });
+
+      $('outletBasisBar').hidden = UI.rankCat !== 'outlets';
+      document.querySelectorAll('[data-outmode]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.outmode === UI.outMode);
+      });
+
+      const scopeText = F.region ? `${F.region} Territory` : 'All Regions';
+      $('rankingContextSub').textContent = `Scoped to ${scopeText}`;
+
+      const rows = sel();
+      const totScope = Math.max(1, sum(rows));
       let items = [];
 
-      if (state.rankCategory === 'outlets') {
-        items = rows.map(r => ({
-          title: r.outlet,
-          subtitle: `${r.region} · Rep: ${r.salespersonName}`,
-          actual: r.actual,
-          attainment: r.attainment
-        }));
-      } else if (state.rankCategory === 'brands') {
-        const grouped = {};
-        rows.forEach(r => {
-          if (!grouped[r.brand]) grouped[r.brand] = { title: r.brand, actual: 0, target: 0, count: 0 };
-          grouped[r.brand].actual += r.actual;
-          grouped[r.brand].target += r.target;
-          grouped[r.brand].count += 1;
+      if (UI.rankCat === 'outlets' && S.has.outlet) {
+        const agg = outletAgg(rows);
+        const maxNet = agg.reduce((m, o) => Math.max(m, o.net), 1);
+        items = agg.map(o => {
+          const peerPct = o.rel * 100;
+          const sortKey = UI.outMode === 'peer' ? peerPct : o.net;
+          const rightBadge = UI.outMode === 'peer'
+            ? (o.rel ? Math.round(peerPct) + '% med' : '—')
+            : (totScope > 0 ? (o.net / totScope * 100).toFixed(1) + '%' : '0%');
+          const barWidth = UI.outMode === 'peer'
+            ? Math.min(100, peerPct)
+            : Math.min(100, (Math.max(0, o.net) / maxNet) * 100);
+          return {
+            title: o.name,
+            subtitle: [o.region, o.branch, S.has.type ? o.type : '', `${o.nInv} inv`].filter(Boolean).join(' · '),
+            val: o.net,
+            sortKey,
+            rightBadge,
+            barWidth,
+            outletId: o.id
+          };
         });
-        items = Object.values(grouped).map(g => ({
-          title: g.title,
-          subtitle: `${g.count} active accounts in scope`,
-          actual: g.actual,
-          attainment: g.target > 0 ? (g.actual / g.target) * 100 : 0
+        $('rankingSortMeta').textContent = UI.outMode === 'peer' ? 'Sorted vs. Same Type Median' : 'Sorted by Net Sales';
+      } else if (UI.rankCat === 'brands' && S.has.brand) {
+        const grouped = group(rows, r => r.brand, 'desc');
+        const maxVal = grouped.reduce((m, g) => Math.max(m, g.v), 1);
+        items = grouped.map(g => ({
+          title: g.k,
+          subtitle: `${rows.filter(r => r.brand === g.k).length} order lines in scope`,
+          val: g.v,
+          sortKey: g.v,
+          rightBadge: (Math.max(0, g.v) / totScope * 100).toFixed(1) + '%',
+          barWidth: Math.min(100, (Math.max(0, g.v) / maxVal) * 100),
+          filterDim: 'brand',
+          filterVal: g.k
         }));
-      } else {
-        const grouped = {};
-        rows.forEach(r => {
-          if (!grouped[r.spId]) {
-            grouped[r.spId] = {
-              title: r.salespersonName,
-              subtitle: `${r.region} · ${r.territory}`,
-              actual: 0,
-              target: 0
-            };
-          }
-          grouped[r.spId].actual += r.actual;
-          grouped[r.spId].target += r.target;
+        $('rankingSortMeta').textContent = 'Sorted by Brand Net Sales';
+      } else if (S.has.sm) {
+        const grouped = group(rows, r => r.sm, 'desc');
+        const maxVal = grouped.reduce((m, g) => Math.max(m, g.v), 1);
+        items = grouped.map(g => {
+          const repRows = rows.filter(r => r.sm === g.k);
+          const outs = new Set(repRows.map(r => r.oid)).size;
+          return {
+            title: g.k,
+            subtitle: `${outs} outlets · ${repRows.length} lines`,
+            val: g.v,
+            sortKey: g.v,
+            rightBadge: (Math.max(0, g.v) / totScope * 100).toFixed(1) + '%',
+            barWidth: Math.min(100, (Math.max(0, g.v) / maxVal) * 100),
+            filterDim: 'sm',
+            filterVal: g.k
+          };
         });
-        items = Object.values(grouped).map(g => ({
-          title: g.title,
-          subtitle: g.subtitle,
-          actual: g.actual,
-          attainment: g.target > 0 ? (g.actual / g.target) * 100 : 0
-        }));
+        $('rankingSortMeta').textContent = 'Sorted by Salesperson Volume';
       }
 
-      items.sort((a, b) =>
-        state.rankDirection === 'top'
-          ? b.attainment - a.attainment
-          : a.attainment - b.attainment
-      );
-
+      items.sort((a, b) => isTop ? b.sortKey - a.sortKey : a.sortKey - b.sortKey);
       const visible = items.slice(0, 5);
-      countMetaEl.textContent = `Showing ${visible.length} of ${items.length}`;
+      $('rankingCountMeta').textContent = `Showing ${visible.length} of ${items.length}`;
 
-      if (visible.length === 0) {
-        listEl.innerHTML = `<div class="py-10 text-center text-xs text-slate-400">No entities match current filter scope.</div>`;
+      const listEl = $('rankingRowsList');
+      if (!visible.length) {
+        listEl.innerHTML = '<div class="empty-state">No entities match current filter scope.</div>';
         return;
       }
 
+      const barColor = isTop ? '#0F766E' : '#B45309';
+      const pctColor = isTop ? '#047857' : '#B91C1C';
+
       listEl.innerHTML = visible.map((item, idx) => {
-        const st = getStatusMeta(item.attainment);
+        const actionAttrs = item.outletId
+          ? `data-outlet="${esc(item.outletId)}"`
+          : (item.filterDim ? `data-dim="${item.filterDim}" data-val="${esc(item.filterVal)}"` : '');
         return `
-          <div class="py-3 flex items-center justify-between gap-3">
-            <div class="flex items-start gap-2.5 min-w-0">
-              <span class="tabular text-[11px] font-semibold text-slate-400 w-4 pt-0.5 shrink-0">${idx + 1}.</span>
-              <div class="min-w-0">
-                <div class="text-xs font-semibold text-slate-900 truncate" title="${item.title}">${item.title}</div>
-                <div class="text-[11px] text-slate-500 truncate mt-0.5">${item.subtitle}</div>
+          <div class="rank-item" ${actionAttrs} title="Click to inspect or filter">
+            <div class="rank-left">
+              <span class="rank-num tabular">${idx + 1}.</span>
+              <div class="rank-info">
+                <div class="rank-title">${esc(item.title)}</div>
+                <div class="rank-meta">${esc(item.subtitle)}</div>
               </div>
             </div>
-            <div class="text-right shrink-0 w-28">
-              <div class="flex items-baseline justify-end gap-1.5 tabular">
-                <span class="text-xs font-semibold text-slate-900">${formatIDRCompact(item.actual)}</span>
-                <span class="text-[11px] font-semibold ${st.textClass}">${item.attainment.toFixed(0)}%</span>
+            <div class="rank-right tabular">
+              <div class="rank-metrics">
+                <span class="rank-val">${rpCompact(item.val)}</span>
+                <span class="rank-pct" style="color:${pctColor}">${esc(item.rightBadge)}</span>
               </div>
-              <div class="mt-1.5 w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                <div class="h-1.5 rounded-full" style="width: ${Math.min(100, item.attainment)}%; background-color: ${st.barColor}"></div>
+              <div class="progress-track" style="margin-top:6px;">
+                <div class="progress-fill" style="width:${item.barWidth.toFixed(1)}%;background:${barColor};"></div>
               </div>
             </div>
           </div>
@@ -1147,125 +2703,468 @@
       }).join('');
     }
 
-    /**
-     * =========================================================================
-     * 9. RENDERING: ACCOUNT & SALESPERSON PERFORMANCE LEDGER TABLE
-     * =========================================================================
-     */
-    function toggleSort(col) {
-      if (state.sortCol === col) {
-        state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
-      } else {
-        state.sortCol = col;
-        state.sortDir = ['outlet', 'region', 'salesperson', 'brand'].includes(col) ? 'asc' : 'desc';
-      }
+    function renderMatrix() {
+      const ok = S.has.region && S.has.brand && UI.pov === 'director';
+      $('matrixSection').hidden = !ok;
+      if (!ok) return;
 
-      ['outlet', 'region', 'salesperson', 'brand', 'actual', 'target', 'attainment'].forEach(c => {
-        const el = document.getElementById(`sort-${c}`);
-        if (el) {
-          el.textContent = '↕';
-          el.className = 'text-slate-400';
-        }
-      });
-      const active = document.getElementById(`sort-${col}`);
-      if (active) {
-        active.textContent = state.sortDir === 'asc' ? '↑' : '↓';
-        active.className = 'text-teal-700';
-      }
-      renderLedgerTable();
-    }
+      const rows = sel(['region', 'brand']);
+      const regs = group(rows, r => r.region).map(x => x.k);
+      const brs = group(rows, r => r.brand).slice(0, 10).map(x => x.k);
 
-    function renderLedgerTable() {
-      const search = document.getElementById('tableSearch').value.trim().toLowerCase();
-      const statusFilter = document.getElementById('tableStatusFilter').value;
-
-      let rows = getFilteredLedger().map(r => ({
-        ...r,
-        status: getStatusMeta(r.attainment)
-      }));
-
-      if (search) {
-        rows = rows.filter(r =>
-          r.outlet.toLowerCase().includes(search) ||
-          r.salespersonName.toLowerCase().includes(search) ||
-          r.brand.toLowerCase().includes(search) ||
-          r.region.toLowerCase().includes(search)
-        );
-      }
-
-      if (statusFilter !== 'ALL') {
-        rows = rows.filter(r => r.status.label === statusFilter);
-      }
-
-      rows.sort((a, b) => {
-        let vA, vB;
-        switch (state.sortCol) {
-          case 'outlet':      vA = a.outlet; vB = b.outlet; break;
-          case 'region':      vA = a.region; vB = b.region; break;
-          case 'salesperson': vA = a.salespersonName; vB = b.salespersonName; break;
-          case 'brand':       vA = a.brand; vB = b.brand; break;
-          case 'actual':      vA = a.actual; vB = b.actual; break;
-          case 'target':      vA = a.target; vB = b.target; break;
-          default:            vA = a.attainment; vB = b.attainment;
-        }
-        if (typeof vA === 'string') {
-          return state.sortDir === 'asc' ? vA.localeCompare(vB) : vB.localeCompare(vA);
-        }
-        return state.sortDir === 'asc' ? vA - vB : vB - vA;
-      });
-
-      const tbody = document.getElementById('ledgerTableBody');
-      const emptyEl = document.getElementById('ledgerEmpty');
-
-      if (rows.length === 0) {
-        tbody.innerHTML = '';
-        emptyEl.classList.remove('hidden');
+      if (!regs.length) {
+        $('gridContainer').innerHTML = '<div class="empty-state">No rows match the current filter criteria.</div>';
         return;
       }
 
-      emptyEl.classList.add('hidden');
-      tbody.innerHTML = rows.map(r => `
-        <tr class="hover:bg-slate-50/90 transition-colors">
-          <td class="py-2.5 px-4 font-semibold text-slate-900">${r.outlet}</td>
-          <td class="py-2.5 px-4 text-slate-600">${r.region}</td>
-          <td class="py-2.5 px-4">
-            <div class="font-medium text-slate-800">${r.salespersonName}</div>
-            <div class="text-[11px] text-slate-400">${r.territory}</div>
-          </td>
-          <td class="py-2.5 px-4 text-slate-700">${r.brand}</td>
-          <td class="py-2.5 px-4 text-right font-semibold text-slate-900 tabular" title="${formatIDRExact(r.actual)}">${formatIDRCompact(r.actual)}</td>
-          <td class="py-2.5 px-4 text-right text-slate-500 tabular" title="${formatIDRExact(r.target)}">${formatIDRCompact(r.target)}</td>
-          <td class="py-2.5 px-4">
-            <div class="flex items-center gap-2 tabular">
-              <div class="flex-1 bg-slate-100 h-1.5 rounded-full overflow-hidden min-w-[70px]">
-                <div class="h-1.5 rounded-full" style="width: ${Math.min(100, r.attainment)}%; background-color: ${r.status.barColor}"></div>
-              </div>
-              <span class="font-semibold ${r.status.textClass} w-11 text-right">${r.attainment.toFixed(1)}%</span>
-            </div>
-          </td>
-          <td class="py-2.5 px-4 text-right">
-            <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold border ${r.status.pillClass}">
-              ${r.status.label}
-            </span>
-          </td>
-        </tr>
-      `).join('');
+      const cell = {}, rt = {}, ct = {};
+      let mx = 0;
+      rows.forEach(r => {
+        const k = r.region + '\u0001' + r.brand;
+        cell[k] = (cell[k] || 0) + r.net;
+        rt[r.region] = (rt[r.region] || 0) + r.net;
+        if (brs.includes(r.brand)) ct[r.brand] = (ct[r.brand] || 0) + r.net;
+      });
+      regs.forEach(rg => brs.forEach(b => {
+        const v = cell[rg + '\u0001' + b] || 0;
+        if (v > mx) mx = v;
+      }));
+
+      const fmtM = v => v ? int(v / 1e6) : '–';
+      let h = '<table class="matrix-tbl tabular"><thead><tr><th>Region</th>'
+        + brs.map(b => `<th><button type="button" class="matrix-link ${F.brand === b ? 'active' : ''}" data-dim="brand" data-val="${esc(b)}">${esc(b)}</button></th>`).join('')
+        + '<th>Total</th></tr></thead><tbody>';
+
+      regs.forEach(rg => {
+        h += `<tr><td><button type="button" class="matrix-link ${F.region === rg ? 'active' : ''}" data-dim="region" data-val="${esc(rg)}">${esc(rg)}</button></td>`;
+        brs.forEach(b => {
+          const v = cell[rg + '\u0001' + b] || 0;
+          const alpha = mx > 0 ? (Math.max(0, v) / mx * 0.22).toFixed(2) : 0;
+          h += `<td style="--cell-alpha:${alpha}">${fmtM(v)}</td>`;
+        });
+        h += `<td style="font-weight:600;">${fmtM(rt[rg])}</td></tr>`;
+      });
+
+      h += '</tbody><tfoot><tr><td>Total</td>'
+        + brs.map(b => `<td>${fmtM(ct[b] || 0)}</td>`).join('')
+        + `<td>${fmtM(sum(rows))}</td></tr></tfoot></table>`;
+
+      $('gridContainer').innerHTML = h;
     }
 
-    function renderAll() {
-      const rows = getFilteredLedger();
-      renderKPIs(rows);
-      renderPrimaryBarChart(rows);
-      renderBrandDonut(rows);
-      renderOperationalRankings(rows);
-      renderLedgerTable();
+    function renderLedger() {
+      $('ledgerWrap').hidden = !S.has.outlet;
+      if (!S.has.outlet) return;
+
+      let agg = outletAgg(sel()).map(o => {
+        const relPct = o.rel * 100;
+        return {...o, relPct, bench: getBenchmarkMeta(relPct)};
+      });
+
+      const q = UI.q.trim().toLowerCase();
+      if (q) {
+        agg = agg.filter(o => (o.name + ' ' + o.id + ' ' + o.branch + ' ' + o.region + ' ' + o.type + ' ' + o.sm).toLowerCase().includes(q));
+      }
+
+      if (UI.statusFilter !== 'ALL') {
+        agg = agg.filter(o => o.bench.label === UI.statusFilter);
+      }
+
+      const SORT = {
+        name: o => o.name.toLowerCase(),
+        region: o => (o.region + o.branch).toLowerCase(),
+        type: o => o.type.toLowerCase(),
+        inv: o => o.nInv,
+        net: o => o.net,
+        rel: o => o.rel
+      };
+      const f = SORT[UI.sortCol] || SORT.net;
+      agg.sort((a, b) => {
+        const x = f(a), y = f(b), c = x < y ? -1 : x > y ? 1 : 0;
+        return UI.sortDir === 'asc' ? c : -c;
+      });
+
+      const lim = UI.showAll ? agg.length : Math.min(agg.length, 30);
+      const body = $('ledgerBody');
+
+      if (!agg.length) {
+        body.innerHTML = '<tr><td colspan="7" class="empty-state">No outlet accounts match the active filter criteria.</td></tr>';
+      } else {
+        body.innerHTML = agg.slice(0, lim).map(o => {
+          const barW = Math.min(100, o.relPct);
+          return `
+            <tr>
+              <td>
+                <div class="cell-main">${esc(o.name)}</div>
+                <div class="cell-sub">${esc(o.id)}${S.has.sm && o.sm ? ' · Rep: ' + esc(o.sm) : ''}</div>
+              </td>
+              <td>
+                <div style="color:var(--ink-secondary);font-weight:500;">${esc(o.region)}</div>
+                ${o.branch ? `<div class="cell-sub">${esc(o.branch)}</div>` : ''}
+              </td>
+              <td style="color:var(--ink-secondary);">${esc(o.type)}</td>
+              <td class="num tabular" style="color:var(--ink-secondary);">${int(o.nInv)}</td>
+              <td class="num tabular" style="font-weight:600;color:var(--ink);" title="${rpExact(o.net)}">${int(o.net)}</td>
+              <td>
+                <div class="attain-cell tabular">
+                  <div class="attain-bar">
+                    <div style="width:${barW.toFixed(1)}%;background:${o.bench.barColor};"></div>
+                  </div>
+                  <span style="font-weight:600;color:${o.bench.textColor};width:44px;text-align:right;">
+                    ${o.rel ? Math.round(o.relPct) + '%' : '–'}
+                  </span>
+                </div>
+              </td>
+              <td class="num">
+                <span class="badge ${o.bench.badgeClass}">${o.bench.label}</span>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      $('ledgerCount').textContent = `${int(agg.length)} active accounts in scope`;
+      $('ledgerShowingMeta').textContent = `Showing ${Math.min(lim, agg.length)} of ${int(agg.length)} outlets`;
+      const more = $('btnShowAll');
+      more.hidden = agg.length <= 30;
+      more.textContent = UI.showAll ? 'Show top 30' : `Show all ${int(agg.length)} outlets`;
+
+      document.querySelectorAll('[data-sort]').forEach(th => {
+        const on = th.dataset.sort === UI.sortCol;
+        const ar = th.querySelector('.ar');
+        if (ar) {
+          ar.textContent = on ? (UI.sortDir === 'asc' ? '↑' : '↓') : '↕';
+          ar.style.color = on ? 'var(--teal)' : 'var(--faint)';
+        }
+      });
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      populateSalespersonSelect();
-      updateHeaderAndResetState();
-      renderAll();
+    function renderDQ() {
+      const q = S.q, L = [];
+      L.push(`${int(q.read)} rows read from ${S.name}; ${int(S.rows.length)} clean rows active.`);
+      L.push(`${q.dup} exact duplicate row(s) ${UI.dedup ? 'removed' : 'kept'}${q.dupInv.length ? ' (e.g. ' + q.dupInv.join(', ') + ')' : ''}.`);
+      const names = {region: 'Region', branch: 'Branch', brand: 'Brand', sm: 'Salesperson', otype: 'Outlet type'};
+      Object.keys(names).forEach(k => {
+        if (q.fix[k]) L.push(`${names[k]} labels standardized across ${q.fix[k]} row(s).`);
+      });
+      if (q.returns) L.push(`${q.returns} return line(s) netted from revenue without inflating invoice count.`);
+      if (q.invalid) L.push(`${q.invalid} row(s) skipped due to missing date or invalid amount.`);
+      if (q.shared.length) L.push(`${q.shared.length} shared outlet name(s) grouped by unique Outlet ID.`);
+      $('dq').innerHTML = L.map(x => `<li>${esc(x)}</li>`).join('');
+    }
+
+    /* ---------- Telegram / WhatsApp Briefing ---------- */
+    function makeSummary(L) {
+      const id = L === 'id', money = id ? rpID : rpCompact, rows = sel(), p = prevInfo();
+      if (!rows.length) return id ? 'Tidak ada penjualan pada pilihan filter ini.' : 'No sales recorded for the active filter selection.';
+
+      const tot = sum(rows);
+      const live = rows.filter(r => !r.ret);
+      const invs = new Set(live.map(r => r.inv || 'L' + r.line)).size;
+      const retV = rows.reduce((s, r) => r.ret ? s + r.net : s, 0);
+      const names = id ? {region: 'region', brand: 'brand', type: 'tipe outlet', sm: 'sales'} : {region: 'region', brand: 'brand', type: 'outlet type', sm: 'salesperson'};
+      const scope = Object.keys(names).filter(k => F[k]).map(k => names[k] + ' ' + F[k]);
+      const range = F.t0 === F.t1 ? dfmt(F.t0, L) : dfmt(F.t0, L) + ' – ' + dfmt(F.t1, L);
+      const unit = id ? ' invoice' : (S.has.inv ? ' invoices' : ' order lines');
+      const ret = retV < 0 ? (id ? ` (setelah retur ${money(-retV)})` : ` (net of ${money(-retV)} returns)`) : '';
+
+      const out = [`${id ? 'Ringkasan penjualan' : 'Sales briefing'} ${scope.length ? '(' + scope.join(', ') + ') ' : ''}${range}: ${id ? 'penjualan bersih' : 'net sales'} ${money(tot)} ${id ? 'dari' : 'across'} ${invs}${unit}${ret}.`];
+
+      if (S.has.region && !F.region && UI.pov === 'director') {
+        const g = group(rows, r => r.region);
+        if (g.length > 1) {
+          const a = g[0], z = g[g.length - 1];
+          out.push(id ? `Region tertinggi ${a.k} (${pc(a.v, tot, L)}), terendah ${z.k} (${pc(z.v, tot, L)}).`
+                      : `Top region ${a.k} (${pc(a.v, tot, L)}), lowest ${z.k} (${pc(z.v, tot, L)}).`);
+        }
+      }
+
+      if (S.has.brand && !F.brand) {
+        const g = group(rows, r => r.brand);
+        if (g.length) {
+          const a = g[0], b = g[1];
+          out.push(id ? `Brand utama ${a.k} (${pc(a.v, tot, L)})${b ? `, diikuti ${b.k} (${pc(b.v, tot, L)})` : ''}.`
+                      : `Leading brand ${a.k} (${pc(a.v, tot, L)})${b ? `, followed by ${b.k} (${pc(b.v, tot, L)})` : ''}.`);
+        }
+      }
+
+      if (S.has.sm && !F.sm) {
+        const g = group(rows, r => r.sm);
+        if (g.length > 1) {
+          const a = g[0], z = g[g.length - 1];
+          out.push(id ? `Sales tertinggi ${a.k} (${money(a.v)}), terendah ${z.k} (${money(z.v)}).`
+                      : `Top rep ${a.k} (${money(a.v)}), lowest ${z.k} (${money(z.v)}).`);
+        }
+      }
+
+      if (S.has.outlet) {
+        const key = UI.outMode === 'peer' ? 'rel' : 'net';
+        const w = outletAgg(rows).sort((a, b) => a[key] - b[key]).slice(0, 5);
+        if (w.length) {
+          const list = w.map((o, i) => `${i + 1}) ${o.name}${o.branch ? ' (' + o.branch + ')' : ''} ${money(o.net)}`).join('; ');
+          out.push(id ? `Outlet butuh perhatian: ${list}.` : `Outlets needing attention: ${list}.`);
+        }
+      }
+
+      if (p) {
+        const pt = sum(selPrev());
+        if (pt) {
+          const ch = (tot - pt) / Math.abs(pt) * 100;
+          out.push(id ? `Dibanding ${monthLabel(p.m, 'id')}: ${ch >= 0 ? 'naik' : 'turun'} ${dec(Math.abs(ch), 1, L)}%.`
+                      : `Versus ${monthLabel(p.m, 'en')}: ${ch >= 0 ? 'up' : 'down'} ${dec(Math.abs(ch), 1, L)}%.`);
+        }
+      }
+      return out.join(' ');
+    }
+
+    function renderSummary() {
+      document.querySelectorAll('[data-lang]').forEach(b => {
+        b.classList.toggle('active', b.dataset.lang === UI.lang);
+      });
+      $('summaryText').textContent = makeSummary(UI.lang);
+      $('copied').textContent = '';
+    }
+
+    /* ---------- Event Delegation ---------- */
+    document.addEventListener('click', e => {
+      const t = e.target;
+      let el;
+
+      if (S && (el = t.closest('[data-pov]'))) {
+        switchPOV(el.dataset.pov);
+        return;
+      }
+      if (S && (el = t.closest('[data-area]'))) {
+        F.region = el.dataset.area;
+        F.sm = null;
+        populateSalespersonSelect();
+        render();
+        return;
+      }
+      if (S && (el = t.closest('[data-donut]'))) {
+        UI.donutDim = el.dataset.donut;
+        renderDonutCard();
+        return;
+      }
+      if (S && (el = t.closest('[data-dim]'))) {
+        const d = el.dataset.dim, v = el.dataset.val;
+        if (UI.pov === 'manager' && d === 'region') return;
+        F[d] = F[d] === v ? null : v;
+        if (d === 'region') populateSalespersonSelect();
+        render();
+        return;
+      }
+      if (S && (el = t.closest('[data-clear]'))) {
+        const k = el.dataset.clear;
+        if (k === 'month' || k === 'range') setMonth('');
+        else F[k] = null;
+        if (k === 'region') populateSalespersonSelect();
+        render();
+        return;
+      }
+      if (S && (el = t.closest('[data-rankdir]'))) {
+        UI.rankDir = el.dataset.rankdir;
+        renderOperationalRankings();
+        return;
+      }
+      if (S && (el = t.closest('[data-rankcat]'))) {
+        UI.rankCat = el.dataset.rankcat;
+        renderOperationalRankings();
+        return;
+      }
+      if (S && (el = t.closest('[data-outmode]'))) {
+        UI.outMode = el.dataset.outmode;
+        renderOperationalRankings();
+        return;
+      }
+      if (S && (el = t.closest('[data-lang]'))) {
+        UI.lang = el.dataset.lang;
+        renderSummary();
+        return;
+      }
+      if (S && (el = t.closest('[data-outlet]'))) {
+        UI.q = el.dataset.outlet;
+        $('q').value = UI.q;
+        renderLedger();
+        $('ledgerWrap').scrollIntoView({behavior: 'smooth', block: 'start'});
+        return;
+      }
+      if (S && (el = t.closest('[data-sort]'))) {
+        const c = el.dataset.sort;
+        if (UI.sortCol === c) UI.sortDir = UI.sortDir === 'asc' ? 'desc' : 'asc';
+        else {
+          UI.sortCol = c;
+          UI.sortDir = ['name', 'region', 'type'].includes(c) ? 'asc' : 'desc';
+        }
+        renderLedger();
+        return;
+      }
+      if (S && t.closest('[data-showall]')) {
+        UI.showAll = !UI.showAll;
+        renderLedger();
+        return;
+      }
     });
+
+    $('filterRegion').addEventListener('change', e => {
+      if (!S) return;
+      F.region = e.target.value || null;
+      F.sm = null;
+      populateSalespersonSelect();
+      render();
+    });
+    $('filterBrand').addEventListener('change', e => { if (S) { F.brand = e.target.value || null; render(); } });
+    $('filterSalesperson').addEventListener('change', e => { if (S) { F.sm = e.target.value || null; render(); } });
+    $('filterType').addEventListener('change', e => { if (S) { F.type = e.target.value || null; render(); } });
+    $('filterMonth').addEventListener('change', e => { if (S) { setMonth(e.target.value); render(); } });
+    $('btnResetFilters').addEventListener('click', () => { if (S) resetFilters(); });
+
+    $('q').addEventListener('input', e => { UI.q = e.target.value; if (S) renderLedger(); });
+    $('tableStatusFilter').addEventListener('change', e => { UI.statusFilter = e.target.value; if (S) renderLedger(); });
+    $('dedup').addEventListener('change', e => {
+      UI.dedup = e.target.checked;
+      if (TAB && M) {
+        try { build(); showApp(); }
+        catch (err) { $('err').textContent = err.message; showLoader(); }
+      }
+    });
+
+    $('dFrom').addEventListener('change', e => {
+      const d = parseDate(e.target.value);
+      if (!S || !d) return;
+      F.month = null;
+      F.t0 = Math.max(S.tMin, Math.min(d.t, F.t1));
+      render();
+    });
+    $('dTo').addEventListener('change', e => {
+      const d = parseDate(e.target.value);
+      if (!S || !d) return;
+      F.month = null;
+      F.t1 = Math.min(S.tMax, Math.max(d.t, F.t0));
+      render();
+    });
+
+    /* Drag-to-Brush on Daily Timeline */
+    (() => {
+      const svg = $('strip');
+      let a = null, moved = false, raf = 0;
+      const schedule = () => {
+        if (raf) return;
+        raf = requestAnimationFrame(() => { raf = 0; render(); });
+      };
+      const tAt = e => {
+        const r = svg.getBoundingClientRect(), days = S.tMax - S.tMin + 1;
+        let i = Math.floor((e.clientX - r.left) / r.width * days);
+        i = Math.max(0, Math.min(days - 1, i));
+        return S.tMin + i;
+      };
+      svg.addEventListener('pointerdown', e => {
+        if (!S) return;
+        a = tAt(e);
+        moved = false;
+        svg.setPointerCapture(e.pointerId);
+      });
+      svg.addEventListener('pointermove', e => {
+        if (a == null) return;
+        const b = tAt(e);
+        if (b !== a) moved = true;
+        if (!moved) return;
+        F.month = null;
+        F.t0 = Math.min(a, b);
+        F.t1 = Math.max(a, b);
+        schedule();
+      });
+      const end = () => {
+        if (a == null) return;
+        if (!moved) { F.month = null; F.t0 = S.tMin; F.t1 = S.tMax; }
+        a = null;
+        render();
+      };
+      svg.addEventListener('pointerup', end);
+      svg.addEventListener('pointercancel', end);
+    })();
+
+    /* Copy Briefing */
+    $('btnCopy').addEventListener('click', () => {
+      const t = $('summaryText').textContent;
+      const ok = () => { $('copied').textContent = 'Copied to clipboard.'; };
+      const fb = () => {
+        const a = document.createElement('textarea');
+        a.value = t;
+        a.style.cssText = 'position:fixed;opacity:0';
+        document.body.appendChild(a);
+        a.select();
+        try { if (document.execCommand('copy')) ok(); } catch (_) {}
+        a.remove();
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok, fb);
+      else fb();
+    });
+
+    /* File Loader & Sample Dataset */
+    const readFile = f => f.text().then(t => loadText(t, f.name), () => { $('err').textContent = 'Could not read that file.'; });
+    $('btnPick').addEventListener('click', e => { e.stopPropagation(); $('file').click(); });
+    $('drop').addEventListener('click', () => $('file').click());
+    $('drop').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('file').click(); } });
+    $('file').addEventListener('change', e => { const f = e.target.files[0]; if (f) readFile(f); e.target.value = ''; });
+    $('btnPaste').addEventListener('click', () => { const t = $('paste').value; if (t.trim()) loadText(t, 'pasted-ledger.csv'); });
+
+    const drop = $('drop');
+    ['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+    ['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+    drop.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) readFile(f); });
+
+    $('btnNew').addEventListener('click', showLoader);
+    $('btnCols').addEventListener('click', () => openMapper(false));
+    $('btnCancelMap').addEventListener('click', () => { if (S) showApp(); });
+    $('btnApplyMap').addEventListener('click', () => {
+      document.querySelectorAll('#mapRows select').forEach(s => { M[s.dataset.f] = +s.value; });
+      if (M.date < 0 || M.net < 0) { $('mapErr').textContent = 'Date and net sales columns are required.'; return; }
+      try { build(); showApp(); }
+      catch (err) { $('mapErr').textContent = err.message; }
+    });
+
+    $('btnSample').addEventListener('click', () => {
+      const sampleCSV = [
+        'date,invoice_no,region,branch,outlet_id,outlet_name,outlet_type,salesman,brand,net_sales_idr',
+        '2026-10-03,INV-1001,Jakarta,South Jakarta,OUT-01,GrandLucky SCBD,Modern Trade,Rizky Pratama,Nusantara Roast,245000000',
+        '2026-10-06,INV-1002,Jakarta,South Jakarta,OUT-02,Superindo Pondok Indah,Modern Trade,Rizky Pratama,Kopi Prima,192000000',
+        '2026-10-09,INV-1003,Jakarta,West Jakarta,OUT-03,Ranch Market Puri Indah,Modern Trade,Nadia Putri,Sari Teh,168000000',
+        '2026-10-12,INV-1004,Jakarta,North Jakarta,OUT-04,Agen Grosir Jaya Pluit,Wholesaler,Dimas Saputra,Nusantara Roast,155000000',
+        '2026-10-15,INV-1005,Jakarta,East Jakarta,OUT-05,Toko Makmur Jatinegara,General Trade,Tari Handayani,Botani Drink,64000000',
+        '2026-10-18,INV-1006,Jawa Barat,Bandung,OUT-06,Yogya Riau Junction,Modern Trade,Galih Permana,Nusantara Roast,184000000',
+        '2026-10-20,INV-1007,Jawa Barat,Bandung,OUT-07,Grosir Pasar Baru Center,Wholesaler,Galih Permana,Kopi Prima,142000000',
+        '2026-10-22,INV-1008,Jawa Barat,Cimahi,OUT-08,Borma Toserba Dago,Modern Trade,Sinta Maharani,Sari Teh,126000000',
+        '2026-10-25,INV-1009,Jawa Barat,Soreang,OUT-09,Toko Sinar Abadi Soreang,General Trade,Reza Firmansyah,Botani Drink,48000000',
+        '2026-10-28,INV-1010,Jawa Timur,Surabaya,OUT-10,Hokky Buah P. Sudirman,Modern Trade,Budi Santoso,Nusantara Roast,221000000',
+        '2026-10-29,INV-1011,Jawa Timur,Surabaya,OUT-11,Grosir Pabean Jaya,Wholesaler,Budi Santoso,Kopi Prima,178000000',
+        '2026-10-30,INV-1012,Jawa Tengah,Yogyakarta,OUT-12,Mirota Kampus Sudirman,Modern Trade,Bagus Wijaya,Nusantara Roast,149000000',
+        '2026-11-02,INV-1013,Jakarta,South Jakarta,OUT-01,GrandLucky SCBD,Modern Trade,Rizky Pratama,Nusantara Roast,268000000',
+        '2026-11-04,INV-1014,Jakarta,South Jakarta,OUT-02,Superindo Pondok Indah,Modern Trade,Rizky Pratama,Kopi Prima,205000000',
+        '2026-11-07,INV-1015,Jakarta,West Jakarta,OUT-03,Ranch Market Puri Indah,Modern Trade,Nadia Putri,Sari Teh,179000000',
+        '2026-11-10,INV-1016,Jakarta,North Jakarta,OUT-04,Agen Grosir Jaya Pluit,Wholesaler,Dimas Saputra,Nusantara Roast,162000000',
+        '2026-11-12,INV-1017,Jakarta,East Jakarta,OUT-05,Toko Makmur Jatinegara,General Trade,Tari Handayani,Botani Drink,59000000',
+        '2026-11-14,INV-1018,Jawa Barat,Bandung,OUT-06,Yogya Riau Junction,Modern Trade,Galih Permana,Nusantara Roast,198000000',
+        '2026-11-16,INV-1019,Jawa Barat,Bandung,OUT-07,Grosir Pasar Baru Center,Wholesaler,Galih Permana,Kopi Prima,156000000',
+        '2026-11-18,INV-1020,Jawa Barat,Cimahi,OUT-08,Borma Toserba Dago,Modern Trade,Sinta Maharani,Sari Teh,134000000',
+        '2026-11-20,INV-1021,Jawa Barat,Soreang,OUT-09,Toko Sinar Abadi Soreang,General Trade,Reza Firmansyah,Botani Drink,44000000',
+        '2026-11-21,INV-1022,Jawa Timur,Surabaya,OUT-10,Hokky Buah P. Sudirman,Modern Trade,Budi Santoso,Nusantara Roast,238000000',
+        '2026-11-22,INV-1023,Jawa Timur,Surabaya,OUT-11,Grosir Pabean Jaya,Wholesaler,Budi Santoso,Kopi Prima,189000000',
+        '2026-11-23,INV-1024,Jawa Tengah,Yogyakarta,OUT-12,Mirota Kampus Sudirman,Modern Trade,Bagus Wijaya,Nusantara Roast,161000000',
+        '2026-11-24,RTR-1001,Jakarta,East Jakarta,OUT-05,Toko Makmur Jatinegara,General Trade,Tari Handayani,Botani Drink,-8500000'
+      ].join('\n');
+      loadText(sampleCSV, 'sample_fmcg_sales_2026.csv');
+    });
+
+    try {
+      const l = JSON.parse(localStorage.getItem('sales-ledger-last') || 'null');
+      if (l && l.text) {
+        $('lastWrap').hidden = false;
+        $('btnLast').textContent = 'Reopen ' + l.name;
+        $('btnLast').addEventListener('click', () => loadText(l.text, l.name));
+      }
+    } catch (e) {}
+  })();
   </script>
 </body>
 </html>
